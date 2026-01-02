@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaScramble</title>
+<title>VocaScramble: Interactive Team Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
@@ -16,22 +16,22 @@ body {
   min-height: 100vh;
 }
 h1 {color:#c4161c; font-size:3rem; margin:1rem; text-align:center;}
-.main {width:100%; max-width:1200px; display:flex; flex-direction:column; align-items:center; gap:1rem; flex:1;}
+.main {width:100%; max-width:1400px; display:flex; flex-direction:column; align-items:center; gap:1rem; flex:1;}
 #rules {
   background:#fff; padding:1rem; border-radius:10px; 
   font-size:1.2rem; width:90%; text-align:left;
 }
-textarea {font-size:1.2rem; padding:0.5rem; width:100%; max-width:600px;}
+textarea {font-size:1.2rem; padding:0.5rem; width:100%; max-width:600px; height:150px;}
 input[type="text"] {font-size:1.2rem; padding:0.4rem; width:150px;}
-button {font-size:1.3rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer;}
+button {font-size:1.3rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer; margin-top:0.5rem;}
 button:hover {background:#c4161c;}
 #teams {display:flex; gap:1rem; margin-top:1rem; font-size:1.3rem; flex-wrap:wrap;}
-.team {padding:0.5rem 1rem; border-radius:8px; background:#ddd;}
+.team {padding:0.5rem 1rem; border-radius:8px; background:#ddd; cursor:pointer;}
 .team.current {background:#003a8f; color:white; font-weight:700;}
 #cards {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 columns */
-  grid-template-rows: repeat(5, 120px); /* 5 rows */
+  grid-template-columns: repeat(5, 1fr); 
+  grid-template-rows: repeat(5, 120px);
   gap: 1rem;
   width: 90%;
   justify-items: center;
@@ -50,19 +50,19 @@ button:hover {background:#c4161c;}
 </head>
 <body>
 
-<h1>VocaScramble: Unscramble the Word</h1>
+<h1>VocaScramble: Interactive Team Game</h1>
 
 <div class="main">
 
 <div id="rules">
 <strong>Rules:</strong>
 <ol>
-<li>Enter scrambled words (up to 25, one per line).</li>
-<li>Enter the correct words (matching order, one per line).</li>
-<li>Set 2–3 team names.</li>
-<li>Click a card to reveal the correct word.</li>
-<li>Teams guess the word. Correct = +10 points.</li>
-<li>Next team plays the next card.</li>
+<li>All scrambled words are visible on the screen.</li>
+<li>A student from a team comes to the screen and clicks their team name to select it.</li>
+<li>Then, they click a card to reveal the correct word.</li>
+<li>The selected team guesses the word. Correct = +10 points.</li>
+<li>If wrong, no points are awarded.</li>
+<li>Teams take turns selecting cards until all cards are answered.</li>
 </ol>
 </div>
 
@@ -89,50 +89,62 @@ button:hover {background:#c4161c;}
 </div>
 
 <script>
-let scrambled=[], correct=[], teams=[], scores=[], currentTeam=0;
+let scrambled=[], correct=[], teams=[], scores=[], selectedTeam=null;
 
 function startGame(){
   scrambled = document.getElementById("scrambledInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
   correct = document.getElementById("correctInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
   if(scrambled.length!==correct.length || scrambled.length===0) return alert("Scrambled words and correct words must match and not be empty (max 25).");
+
+  // Shuffle words + answers together
+  let combined = scrambled.map((w,i)=>({word:w, answer:correct[i]}));
+  for(let i = combined.length-1; i>0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [combined[i], combined[j]] = [combined[j], combined[i]];
+  }
+  scrambled = combined.map(c=>c.word);
+  correct = combined.map(c=>c.answer);
+
   teams = [document.getElementById("team1").value||"Team 1",
            document.getElementById("team2").value||"Team 2",
            document.getElementById("team3").value||"Team 3"].filter(t=>t!=="");
   scores = teams.map(_=>0);
+  selectedTeam = null;
   renderTeams();
   renderCards();
 }
 
 function renderTeams(){
-  const div=document.getElementById("teams");
-  div.innerHTML="";
+  const div = document.getElementById("teams");
+  div.innerHTML = "";
   teams.forEach((t,i)=>{
-    const d=document.createElement("div");
-    d.className="team"+(i===currentTeam?" current":"");
-    d.textContent=`${t}: ${scores[i]} pts`;
+    const d = document.createElement("div");
+    d.className = "team" + (i===selectedTeam ? " current" : "");
+    d.textContent = `${t}: ${scores[i]} pts`;
+    d.onclick = () => { selectedTeam = i; renderTeams(); }
     div.appendChild(d);
   });
 }
 
 function renderCards(){
-  const div=document.getElementById("cards");
-  div.innerHTML="";
+  const div = document.getElementById("cards");
+  div.innerHTML = "";
   scrambled.forEach((s,i)=>{
-    const card=document.createElement("div");
-    card.className="card";
-    card.textContent=s;
-    card.onclick=function(){
+    const card = document.createElement("div");
+    card.className = "card";
+    card.textContent = s;
+    card.onclick = function(){
       if(card.classList.contains("revealed")) return;
+      if(selectedTeam === null) return alert("Select a team first!");
       card.classList.add("revealed");
-      card.textContent=correct[i];
-      const answer = prompt(`Team ${teams[currentTeam]}: Guess the word!`);
-      if(answer && answer.trim().toLowerCase()===correct[i].toLowerCase()){
-        scores[currentTeam]+=10;
-        document.getElementById("feedback").textContent=`✅ Correct! +10 points`;
+      card.textContent = correct[i];
+      const answer = prompt(`Team ${teams[selectedTeam]}: Guess the word!`);
+      if(answer && answer.trim().toLowerCase() === correct[i].toLowerCase()){
+        scores[selectedTeam] += 10;
+        document.getElementById("feedback").textContent = `✅ Correct! +10 points`;
       } else {
-        document.getElementById("feedback").textContent=`❌ Wrong! The word was: ${correct[i]}`;
+        document.getElementById("feedback").textContent = `❌ Wrong! The word was: ${correct[i]}`;
       }
-      currentTeam=(currentTeam+1)%teams.length;
       renderTeams();
     }
     div.appendChild(card);
