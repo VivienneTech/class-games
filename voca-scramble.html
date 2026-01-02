@@ -66,11 +66,8 @@ button:hover {background:#c4161c;}
 </ol>
 </div>
 
-<h2>Enter Scrambled Words</h2>
-<textarea id="scrambledInput" placeholder="akcraor\npomel\nkaola"></textarea>
-
-<h2>Enter Correct Words (matching order)</h2>
-<textarea id="correctInput" placeholder="carrot\napple\nkoala"></textarea>
+<h2>Enter Vocabulary Words</h2>
+<textarea id="wordsInput" placeholder="skyscraper\nelephant\npineapple"></textarea>
 
 <h2>Teams</h2>
 <div id="teamInputs">
@@ -91,19 +88,21 @@ button:hover {background:#c4161c;}
 <script>
 let scrambled=[], correct=[], teams=[], scores=[], selectedTeam=null;
 
-function startGame(){
-  scrambled = document.getElementById("scrambledInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
-  correct = document.getElementById("correctInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
-  if(scrambled.length!==correct.length || scrambled.length===0) return alert("Scrambled words and correct words must match and not be empty (max 25).");
-
-  // Shuffle words + answers together
-  let combined = scrambled.map((w,i)=>({word:w, answer:correct[i]}));
-  for(let i = combined.length-1; i>0; i--){
-    const j = Math.floor(Math.random() * (i+1));
-    [combined[i], combined[j]] = [combined[j], combined[i]];
+// Function to shuffle letters in a word
+function shuffleWord(word){
+  const arr = word.split('');
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i], arr[j]]=[arr[j],arr[i]];
   }
-  scrambled = combined.map(c=>c.word);
-  correct = combined.map(c=>c.answer);
+  return arr.join('');
+}
+
+function startGame(){
+  correct = document.getElementById("wordsInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
+  if(correct.length===0) return alert("Please enter at least 1 vocabulary word (max 25).");
+  
+  scrambled = correct.map(w=>shuffleWord(w));
 
   teams = [document.getElementById("team1").value||"Team 1",
            document.getElementById("team2").value||"Team 2",
