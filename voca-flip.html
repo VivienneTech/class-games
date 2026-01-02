@@ -2,47 +2,42 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaFlip</title>
+<title>VocaFlip: Flashcard Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {margin:0; font-family:system-ui; background:#f5f7fa; display:flex; flex-direction:column; align-items:center; min-height:100vh;}
-h1 {color:#c4161c; font-size:3rem; margin:1rem;}
-.main {width:90%; max-width:1200px; display:flex; flex-direction:column; align-items:center; gap:1rem;}
-#rules {background:#fff; padding:1rem; border-radius:10px; font-size:1.2rem; width:100%; text-align:left;}
-#cards {display:grid; grid-template-columns:repeat(5, 1fr); grid-template-rows:repeat(5,120px); gap:1rem; width:100%; justify-items:center; align-content:start;}
-.card {width:100%; height:100%; background:#c4161c; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; cursor:pointer; border-radius:12px; font-size:1.5rem; user-select:none;}
-.card.revealed {background:#003a8f;}
-#teams {display:flex; gap:1rem; margin-top:1rem; font-size:1.3rem;}
-.team {padding:0.5rem 1rem; border-radius:8px; background:#ddd;}
-.team.current {background:#003a8f; color:white; font-weight:700;}
-#feedback {margin-top:1rem; font-size:1.5rem; min-height:30px; text-align:center;}
-textarea {width:100%; max-width:600px; height:150px; font-size:1.2rem; padding:0.5rem;}
-input[type=text]{font-size:1.2rem; padding:0.4rem; width:150px;}
-button {font-size:1.3rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer;}
+body {margin:0; font-family:system-ui; display:flex; flex-direction:column; align-items:center; background:#f5f7fa;}
+h1{color:#c4161c; font-size:3rem; text-align:center; margin:1rem;}
+.main{width:100%; max-width:1400px; display:flex; flex-direction:column; align-items:center; gap:1rem;}
+#rules{background:#fff; padding:1rem; border-radius:10px; font-size:1.2rem; width:90%;}
+textarea{font-size:1.2rem; padding:0.5rem; width:90%; max-width:600px; height:150px;}
+input[type="text"]{font-size:1.2rem; padding:0.4rem; width:150px;}
+button{font-size:1.3rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer; margin-top:0.5rem;}
 button:hover{background:#c4161c;}
+#teams{display:flex; gap:1rem; margin-top:1rem; font-size:1.3rem; flex-wrap:wrap;}
+.team{padding:0.5rem 1rem; border-radius:8px; background:#ddd; cursor:pointer;}
+.team.current{background:#003a8f; color:white; font-weight:700;}
+#cards{display:grid; grid-template-columns:repeat(5,1fr); grid-template-rows:repeat(5,120px); gap:1rem; width:90%; justify-items:center; align-content:start;}
+.card{width:100%; height:100%; background:#c4161c; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; cursor:pointer; border-radius:12px; font-size:1.5rem; user-select:none; transition:0.3s; transform-style:preserve-3d;}
+.card.flipped{background:#003a8f; transform:rotateY(180deg);}
+#feedback{margin-top:1rem; font-size:1.5rem; min-height:30px; text-align:center;}
 </style>
 </head>
 <body>
-
-<h1>VocaFlip: Match Words & Meanings</h1>
-
+<h1>VocaFlip: Flashcard Game</h1>
 <div class="main">
 <div id="rules">
 <strong>Rules:</strong>
 <ol>
-<li>Enter words (one per line) and their meanings in same order.</li>
-<li>Set 2–3 team names.</li>
-<li>Click a card to reveal the meaning.</li>
-<li>Teams guess the word. Correct = +10 points.</li>
-<li>Next team plays the next card.</li>
+<li>Students select their team first.</li>
+<li>Click a card to flip it and see the word.</li>
+<li>Read the meaning before flipping.</li>
+<li>Team guesses the word. Correct = +10 points.</li>
+<li>Teams take turns selecting cards.</li>
 </ol>
 </div>
 
-<h2>Enter Words</h2>
-<textarea id="wordsInput" placeholder="carrot\napple\nkoala"></textarea>
-
-<h2>Enter Meanings</h2>
-<textarea id="meaningsInput" placeholder="A vegetable\nA fruit\nA cute animal"></textarea>
+<h2>Enter Words and Meanings (word:meaning)</h2>
+<textarea id="wordsInput" placeholder="skyscraper:tall building\nelephant:large animal\npineapple:tropical fruit"></textarea>
 
 <h2>Teams</h2>
 <div id="teamInputs">
@@ -52,7 +47,6 @@ button:hover{background:#c4161c;}
 </div>
 
 <button onclick="startGame()">Start Game</button>
-
 <div id="teams"></div>
 <div id="cards"></div>
 <div id="feedback"></div>
@@ -60,50 +54,63 @@ button:hover{background:#c4161c;}
 </div>
 
 <script>
-let words=[], meanings=[], teams=[], scores=[], currentTeam=0;
+let cards=[], teams=[], scores=[], selectedTeam=null;
 
 function startGame(){
-  words=document.getElementById("wordsInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
-  meanings=document.getElementById("meaningsInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
-  if(words.length!==meanings.length || words.length===0) return alert("Words and meanings must match (max 25).");
-  teams=[document.getElementById("team1").value||"Team 1",
-         document.getElementById("team2").value||"Team 2",
-         document.getElementById("team3").value||"Team 3"].filter(t=>t!=="");
-  scores=teams.map(_=>0);
+  const raw = document.getElementById("wordsInput").value.trim().split("\n").map(l=>l.trim()).filter(l=>l!=="");
+  if(raw.length===0) return alert("Enter at least one word:meaning");
+  cards = raw.map(l=>{
+    const parts = l.split(":");
+    return {word:parts[0].trim(), meaning:parts[1].trim(), revealed:false};
+  }).slice(0,25);
+  
+  // Shuffle cards
+  for(let i=cards.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [cards[i], cards[j]]=[cards[j],cards[i]];
+  }
+
+  teams = [document.getElementById("team1").value||"Team 1",
+           document.getElementById("team2").value||"Team 2",
+           document.getElementById("team3").value||"Team 3"].filter(t=>t!=="");
+  scores = teams.map(_=>0);
+  selectedTeam = null;
   renderTeams();
   renderCards();
 }
 
 function renderTeams(){
-  const div=document.getElementById("teams");
+  const div = document.getElementById("teams");
   div.innerHTML="";
   teams.forEach((t,i)=>{
     const d=document.createElement("div");
-    d.className="team"+(i===currentTeam?" current":"");
-    d.textContent=`${t}: ${scores[i]} pts`;
+    d.className = "team" + (i===selectedTeam ? " current" : "");
+    d.textContent = `${t}: ${scores[i]} pts`;
+    d.onclick=()=>{selectedTeam=i; renderTeams();}
     div.appendChild(d);
   });
 }
 
 function renderCards(){
-  const div=document.getElementById("cards");
+  const div = document.getElementById("cards");
   div.innerHTML="";
-  words.forEach((w,i)=>{
-    const card=document.createElement("div");
+  cards.forEach((c,i)=>{
+    const card = document.createElement("div");
     card.className="card";
-    card.textContent=w;
+    card.textContent=c.meaning;
     card.onclick=function(){
-      if(card.classList.contains("revealed")) return;
-      card.classList.add("revealed");
-      card.textContent=meanings[i];
-      const answer=prompt(`Team ${teams[currentTeam]}: Guess the word!`);
-      if(answer && answer.trim().toLowerCase()===words[i].toLowerCase()){
-        scores[currentTeam]+=10;
+      if(c.revealed) return;
+      if(selectedTeam===null) return alert("Select a team first!");
+      c.revealed=true;
+      card.classList.add("flipped");
+      card.textContent=c.word;
+      const answer = prompt(`Team ${teams[selectedTeam]}: Guess the word!`);
+      if(answer && answer.trim().toLowerCase()===c.word.toLowerCase()){
+        scores[selectedTeam]+=10;
         document.getElementById("feedback").textContent=`✅ Correct! +10 points`;
-      }else{
-        document.getElementById("feedback").textContent=`❌ Wrong! The word was: ${words[i]}`;
+      } else {
+        document.getElementById("feedback").textContent=`❌ Wrong! The word was: ${c.word}`;
       }
-      currentTeam=(currentTeam+1)%teams.length;
       renderTeams();
     }
     div.appendChild(card);
@@ -112,6 +119,5 @@ function renderCards(){
 
 function restartGame(){window.location.reload();}
 </script>
-
 </body>
 </html>
