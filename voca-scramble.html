@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VocaScramble: Vocabulary Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html, body {margin:0; padding:0; height:100%; width:100%; font-family:system-ui, sans-serif; display:flex; flex-direction:column;}
+body {background:#f5f7fa; color:#003a8f; overflow:hidden;}
+h1,h2 {margin:0; text-align:center;}
+h1 {font-size:3rem; color:#c4161c; margin-top:1rem;}
+.main {flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:0.5rem; max-width:1200px; margin:auto;}
+
+#setupPanel { width:100%; display:flex; flex-direction:column; align-items:center; gap:1rem; }
+textarea { width:100%; max-width:600px; height:150px; font-size:1.2rem; padding:0.5rem; }
+input[type="text"] { font-size:1.2rem; padding:0.4rem; width:150px; text-align:center; }
+button { font-size:1.4rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer; }
+button:hover { background:#c4161c; }
+
+#rules { background:#fff; padding:1rem; border-radius:10px; width:90%; max-width:800px; margin-bottom:1rem; font-size:1.2rem; }
+
+#gamePanel { display:none; flex-direction:column; align-items:center; width:100%; flex:1; justify-content:flex-start; }
+#teams { display:flex; gap:2rem; margin-bottom:1rem; font-size:1.5rem; flex-wrap:wrap; justify-content:center; }
+.team { padding:0.5rem 1rem; border-radius:8px; background:#ddd; }
+.team.current { background:#003a8f; color:white; font-weight:700; }
+
+#cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; width:90%; flex:1; justify-items:center; align-content:start; }
+.card { width:200px; height:120px; background:#c4161c; color:white; display:flex; align-items:center; justify-content:center; font-size:1.5rem; border-radius:12px; cursor:pointer; user-select:none; }
+.card.flipped { background:#003a8f; }
+#feedback { margin-top:1rem; font-size:1.5rem; min-height:40px; text-align:center; }
+</style>
+</head>
+<body>
+
+<h1>VocaScramble: Vocabulary Game</h1>
+
+<div class="main">
+  <div id="setupPanel">
+    <div id="rules">
+      <strong>Rules:</strong>
+      <ol>
+        <li>Enter vocabulary words (one per line) below.</li>
+        <li>Set up 2 or 3 teams and give them names.</li>
+        <li>Each team takes turns clicking a scrambled word card.</li>
+        <li>Try to guess the correct word before it is revealed.</li>
+        <li>Correct guesses = +10 points, next team plays next card.</li>
+      </ol>
+    </div>
+
+    <h2>Enter Vocabulary Words (one per line)</h2>
+    <textarea id="wordsInput" placeholder="Example:\nskyscraper\napple\nkoala"></textarea>
+
+    <h2>Teams</h2>
+    <div id="teamInputs">
+      <input type="text" value="Team 1" id="team1">
+      <input type="text" value="Team 2" id="team2">
+      <input type="text" value="Team 3" id="team3">
+    </div>
+
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="gamePanel">
+    <div id="teams"></div>
+    <div id="cards"></div>
+    <div id="feedback"></div>
+    <button onclick="restartGame()">Restart</button>
+  </div>
+
+</div>
+
+<script>
+let words = [];
+let scrambledWords = [];
+let teams = [];
+let scores = [];
+let currentTeam = 0;
+
+function startGame(){
+  const raw = document.getElementById("wordsInput").value.trim();
+  if(!raw) return alert("Enter some words first!");
+  words = raw.split("\n").map(w=>w.trim()).filter(w=>w!=="");
+  if(words.length===0) return alert("Enter at least one word!");
+
+  teams = [
+    document.getElementById("team1").value || "Team 1",
+    document.getElementById("team2").value || "Team 2",
+    document.getElementById("team3").value || "Team 3"
+  ].filter(t=>t!=="");
+  scores = teams.map(_=>0);
+
+  scrambledWords = words.map(w => scrambleWord(w));
+
+  document.getElementById("setupPanel").style.display="none";
+  document.getElementById("gamePanel").style.display="flex";
+
+  renderTeams();
+  renderCards();
+}
+
+function scrambleWord(word){
+  let arr = word.split('');
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.join('');
+}
+
+function renderTeams(){
+  const teamsDiv = document.getElementById("teams");
+  teamsDiv.innerHTML="";
+  teams.forEach((t,i)=>{
+    const div = document.createElement("div");
+    div.className = "team"+(i===currentTeam?" current":"");
+    div.textContent = `${t}: ${scores[i]} pts`;
+    teamsDiv.appendChild(div);
+  });
+}
+
+function renderCards(){
+  const cardsDiv = document.getElementById("cards");
+  cardsDiv.innerHTML="";
+  scrambledWords.forEach((sw,i)=>{
+    const card = document.createElement("div");
+    card.className="card";
+    card.textContent=sw;
+    card.onclick = ()=>flipCard(i, card);
+    cardsDiv.appendChild(card);
+  });
+}
+
+function flipCard(index, card){
+  if(card.classList.contains("flipped")) return;
+  card.classList.add("flipped");
+  card.textContent = words[index];
+
+  const answer = prompt(`Team ${teams[currentTeam]}: Guess the word!`);
+  if(answer && answer.trim().toLowerCase() === words[index].toLowerCase()){
+    scores[currentTeam]+=10;
+    document.getElementById("feedback").textContent = `✅ Correct! +10 points`;
+  } else {
+    document.getElementById("feedback").textContent = `❌ Wrong! The correct word was: ${words[index]}`;
+  }
+
+  currentTeam = (currentTeam+1)%teams.length;
+  renderTeams();
+}
+
+function restartGame(){
+  window.location.reload();
+}
+</script>
+
+</body>
+</html>
