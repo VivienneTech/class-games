@@ -5,36 +5,132 @@
 <title>VocaFlip: Flashcard Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {margin:0; font-family:system-ui; display:flex; flex-direction:column; align-items:center; background:#f5f7fa;}
-h1{color:#c4161c; font-size:3rem; text-align:center; margin:1rem;}
-.main{width:100%; max-width:1400px; display:flex; flex-direction:column; align-items:center; gap:1rem;}
-#rules{background:#fff; padding:1rem; border-radius:10px; font-size:1.2rem; width:90%;}
-textarea{font-size:1.2rem; padding:0.5rem; width:90%; max-width:600px; height:150px;}
-input[type="text"]{font-size:1.2rem; padding:0.4rem; width:150px;}
-button{font-size:1.3rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer; margin-top:0.5rem;}
+body {
+  margin:0;
+  font-family:system-ui;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  background:#f5f7fa;
+}
+h1{
+  color:#c4161c;
+  font-size:3rem;
+  text-align:center;
+  margin:1rem;
+}
+.main{
+  width:100%;
+  max-width:1400px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1rem;
+}
+#rules{
+  background:#fff;
+  padding:1rem;
+  border-radius:10px;
+  font-size:1.2rem;
+  width:90%;
+}
+textarea{
+  font-size:1.2rem;
+  padding:0.5rem;
+  width:90%;
+  max-width:600px;
+  height:150px;
+}
+input[type="text"]{
+  font-size:1.2rem;
+  padding:0.4rem;
+  width:150px;
+}
+button{
+  font-size:1.3rem;
+  padding:0.7rem 1rem;
+  border:none;
+  border-radius:8px;
+  background:#003a8f;
+  color:white;
+  cursor:pointer;
+  margin-top:0.5rem;
+}
 button:hover{background:#c4161c;}
-#teams{display:flex; gap:1rem; margin-top:1rem; font-size:1.3rem; flex-wrap:wrap;}
-.team{padding:0.5rem 1rem; border-radius:8px; background:#ddd; cursor:pointer;}
-.team.current{background:#003a8f; color:white; font-weight:700;}
-#cards{display:grid; grid-template-columns:repeat(5,1fr); grid-template-rows:repeat(5,120px); gap:1rem; width:90%; justify-items:center; align-content:start;}
+#teams{
+  display:flex;
+  gap:1rem;
+  margin-top:1rem;
+  font-size:1.3rem;
+  flex-wrap:wrap;
+}
+.team{
+  padding:0.5rem 1rem;
+  border-radius:8px;
+  background:#ddd;
+  cursor:pointer;
+}
+.team.current{
+  background:#003a8f;
+  color:white;
+  font-weight:700;
+}
+#cards{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:repeat(5,120px);
+  gap:1rem;
+  width:90%;
+  justify-items:center;
+  align-content:start;
+}
 
-/* Correct flip effect */
-.card { width:100%; height:100%; perspective:1000px; cursor:pointer; }
-.card-inner {
-  position: relative; width:100%; height:100%;
-  text-align:center; transition: transform 0.6s; transform-style: preserve-3d;
+/* FLIP EFFECT FIXED */
+.card{
+  width:100%;
+  height:100%;
+  perspective:1000px;
+  cursor:pointer;
+}
+.card-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  text-align:center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
   border-radius:12px;
 }
-.card.flipped .card-inner { transform: rotateY(180deg); }
-.card-front, .card-back {
-  position: absolute; width:100%; height:100%; backface-visibility: hidden;
-  display:flex; justify-content:center; align-items:center;
-  font-weight:bold; font-size:1.5rem; border-radius:12px; color:white;
+.card.flipped .card-inner{
+  transform: rotateY(180deg);
 }
-.card-front { background:#c4161c; }
-.card-back { background:#003a8f; transform: rotateY(0deg); }
+.card-front, .card-back{
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:bold;
+  font-size:1.5rem;
+  border-radius:12px;
+  color:white;
+}
+.card-front{
+  background:#c4161c;
+}
+.card-back{
+  background:#003a8f;
+  transform: rotateY(0deg); /* text stays readable */
+}
 
-#feedback{margin-top:1rem; font-size:1.5rem; min-height:30px; text-align:center;}
+#feedback{
+  margin-top:1rem;
+  font-size:1.5rem;
+  min-height:30px;
+  text-align:center;
+}
 </style>
 </head>
 <body>
@@ -53,7 +149,9 @@ button:hover{background:#c4161c;}
 </div>
 
 <h2>Enter Words and Meanings (word:meaning)</h2>
-<textarea id="wordsInput" placeholder="skyscraper:tall building\nelephant:large animal\npineapple:tropical fruit"></textarea>
+<textarea id="wordsInput" placeholder="skyscraper:tall building
+elephant:large animal
+pineapple:tropical fruit"></textarea>
 
 <h2>Teams</h2>
 <div id="teamInputs">
@@ -152,4 +250,3 @@ function restartGame(){window.location.reload();}
 </script>
 </body>
 </html>
-
