@@ -2,49 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaFlip: Flip & Guess</title>
+<title>VocaFlip</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {margin:0; font-family:system-ui; background:#f5f7fa; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:100vh;}
+body {margin:0; font-family:system-ui; background:#f5f7fa; display:flex; flex-direction:column; align-items:center; min-height:100vh;}
 h1 {color:#c4161c; font-size:3rem; margin:1rem;}
-.main {width:100%; max-width:900px; display:flex; flex-direction:column; align-items:center; gap:1rem; flex:1;}
-#rules {background:#fff; padding:1rem; border-radius:10px; font-size:1.2rem; width:90%; text-align:left;}
-textarea {font-size:1.2rem; padding:0.5rem; width:100%; max-width:500px;}
-input[type="text"] {font-size:1.2rem; padding:0.4rem; width:150px;}
-button {font-size:1.3rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer;}
-button:hover {background:#c4161c;}
-#teams {display:flex; gap:1rem; margin-top:1rem; font-size:1.3rem; flex-wrap:wrap;}
+.main {width:90%; max-width:1200px; display:flex; flex-direction:column; align-items:center; gap:1rem;}
+#rules {background:#fff; padding:1rem; border-radius:10px; font-size:1.2rem; width:100%; text-align:left;}
+#cards {display:grid; grid-template-columns:repeat(5, 1fr); grid-template-rows:repeat(5,120px); gap:1rem; width:100%; justify-items:center; align-content:start;}
+.card {width:100%; height:100%; background:#c4161c; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; cursor:pointer; border-radius:12px; font-size:1.5rem; user-select:none;}
+.card.revealed {background:#003a8f;}
+#teams {display:flex; gap:1rem; margin-top:1rem; font-size:1.3rem;}
 .team {padding:0.5rem 1rem; border-radius:8px; background:#ddd;}
 .team.current {background:#003a8f; color:white; font-weight:700;}
-#cards {display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:1rem; width:90%; justify-items:center; align-content:start;}
-.card {width:180px; height:120px; background:#c4161c; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; cursor:pointer; border-radius:12px; font-size:1.4rem; user-select:none;}
-.card.flipped {background:#003a8f;}
 #feedback {margin-top:1rem; font-size:1.5rem; min-height:30px; text-align:center;}
+textarea {width:100%; max-width:600px; height:150px; font-size:1.2rem; padding:0.5rem;}
+input[type=text]{font-size:1.2rem; padding:0.4rem; width:150px;}
+button {font-size:1.3rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer;}
+button:hover{background:#c4161c;}
 </style>
 </head>
 <body>
 
-<h1>VocaFlip: Flip & Guess</h1>
+<h1>VocaFlip: Match Words & Meanings</h1>
 
 <div class="main">
-
 <div id="rules">
 <strong>Rules:</strong>
 <ol>
-<li>Enter vocabulary words (one per line).</li>
-<li>Enter their definitions (matching order, one per line).</li>
+<li>Enter words (one per line) and their meanings in same order.</li>
 <li>Set 2–3 team names.</li>
-<li>Click a card to flip and reveal the definition.</li>
+<li>Click a card to reveal the meaning.</li>
 <li>Teams guess the word. Correct = +10 points.</li>
-<li>Next team plays next card.</li>
+<li>Next team plays the next card.</li>
 </ol>
 </div>
 
 <h2>Enter Words</h2>
-<textarea id="wordsInput" placeholder="skyscraper\napple\nkoala"></textarea>
+<textarea id="wordsInput" placeholder="carrot\napple\nkoala"></textarea>
 
-<h2>Enter Definitions (matching order)</h2>
-<textarea id="defsInput" placeholder="Tall building\nA fruit\nAn Australian animal"></textarea>
+<h2>Enter Meanings</h2>
+<textarea id="meaningsInput" placeholder="A vegetable\nA fruit\nA cute animal"></textarea>
 
 <h2>Teams</h2>
 <div id="teamInputs">
@@ -59,20 +57,19 @@ button:hover {background:#c4161c;}
 <div id="cards"></div>
 <div id="feedback"></div>
 <button onclick="restartGame()">Restart</button>
-
 </div>
 
 <script>
-let words=[], defs=[], teams=[], scores=[], currentTeam=0;
+let words=[], meanings=[], teams=[], scores=[], currentTeam=0;
 
 function startGame(){
-  words = document.getElementById("wordsInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="");
-  defs = document.getElementById("defsInput").value.trim().split("\n").map(d=>d.trim()).filter(d=>d!=="");
-  if(words.length!==defs.length || words.length===0) return alert("Words and definitions must match and not be empty.");
-  teams = [document.getElementById("team1").value||"Team 1",
-           document.getElementById("team2").value||"Team 2",
-           document.getElementById("team3").value||"Team 3"].filter(t=>t!=="");
-  scores = teams.map(_=>0);
+  words=document.getElementById("wordsInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
+  meanings=document.getElementById("meaningsInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
+  if(words.length!==meanings.length || words.length===0) return alert("Words and meanings must match (max 25).");
+  teams=[document.getElementById("team1").value||"Team 1",
+         document.getElementById("team2").value||"Team 2",
+         document.getElementById("team3").value||"Team 3"].filter(t=>t!=="");
+  scores=teams.map(_=>0);
   renderTeams();
   renderCards();
 }
@@ -96,15 +93,15 @@ function renderCards(){
     card.className="card";
     card.textContent=w;
     card.onclick=function(){
-      if(card.classList.contains("flipped")) return;
-      card.classList.add("flipped");
-      card.textContent=defs[i];
-      const answer = prompt(`Team ${teams[currentTeam]}: Guess the word!`);
-      if(answer && answer.trim().toLowerCase()===w.toLowerCase()){
+      if(card.classList.contains("revealed")) return;
+      card.classList.add("revealed");
+      card.textContent=meanings[i];
+      const answer=prompt(`Team ${teams[currentTeam]}: Guess the word!`);
+      if(answer && answer.trim().toLowerCase()===words[i].toLowerCase()){
         scores[currentTeam]+=10;
         document.getElementById("feedback").textContent=`✅ Correct! +10 points`;
-      } else {
-        document.getElementById("feedback").textContent=`❌ Wrong! The word was: ${w}`;
+      }else{
+        document.getElementById("feedback").textContent=`❌ Wrong! The word was: ${words[i]}`;
       }
       currentTeam=(currentTeam+1)%teams.length;
       renderTeams();
