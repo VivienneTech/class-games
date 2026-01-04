@@ -141,7 +141,7 @@ function addWordBox(value=""){
   input.addEventListener('input',()=>{input.value=input.value.toLowerCase()});
   grid.appendChild(input);
 }
-for(let i=0;i<25;i++){addWordBox();}
+for(let i=0;i<15;i++){addWordBox();}
 
 // ---------- GAME LOGIC ----------
 function shuffleWord(word){return word.split('').sort(()=>Math.random()-0.5).join('');}
@@ -190,7 +190,6 @@ function renderCards(){
     c.className="card";
     c.textContent=s;
     c.onclick=()=>{
-      // Highlight selected card green
       document.querySelectorAll(".card").forEach(card=>{if(!card.classList.contains("revealed")) card.style.backgroundColor="#ef5350"});
       c.style.backgroundColor="#66bb6a";
       revealCard(c,i);
@@ -235,7 +234,7 @@ function checkAnswer(choice){
     scores[selectedTeam]+=10;
     document.getElementById("correctSound").play();
     document.getElementById("feedback").textContent="✅ Correct! +10";
-    launchConfetti(300);
+    launchConfetti(200,1000); // brief confetti 1 second
   } else {
     document.getElementById("wrongSound").play();
     document.getElementById("feedback").textContent=`❌ Wrong! Answer was "${correct[currentAnswerIndex]}"`;
@@ -253,8 +252,7 @@ function checkWin(){
     const ws=document.getElementById("winnerScreen");
     ws.style.display="block";
     ws.textContent=`🏆 WINNER: ${winner} 🏆`;
-    launchConfetti(500); // more confetti
-    setTimeout(()=>{particles=[]}, 4000);
+    launchConfetti(500,300000); // 5 minutes for final winner
   }
 }
 
@@ -264,7 +262,7 @@ const ctx=canvas.getContext("2d");
 function resizeCanvas(){canvas.width=window.innerWidth; canvas.height=window.innerHeight;}
 window.addEventListener("resize",resizeCanvas);
 resizeCanvas();
-function launchConfetti(count){
+function launchConfetti(count=100,duration=1000){
   for(let i=0;i<count;i++){
     particles.push({
       x: Math.random()*canvas.width,
@@ -276,6 +274,9 @@ function launchConfetti(count){
       tiltAngle:0,
       tiltAngleIncrement:Math.random()*0.07+0.05
     });
+  }
+  if(duration>0){
+    setTimeout(()=>{particles=[]},duration);
   }
 }
 function drawConfetti(){
