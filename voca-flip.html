@@ -4,24 +4,30 @@
 <meta charset="UTF-8">
 <title>🍓 VocaFlip 🍓</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 body {
   margin:0;
-  font-family: system-ui;
+  font-family:'Quicksand', sans-serif;
+  background:#fff9f0;
   display:flex;
   flex-direction:column;
   align-items:center;
-  background:#fdf6e3; /* soft cream background */
 }
-h1{
+h1 {
+  font-family:'Fredoka One', cursive;
   font-size:3rem;
-  font-weight:900;
-  color:#ff6f61;
-  margin:1rem;
+  color:#ff4c6d;
+  margin:0.5rem;
   text-align:center;
-  text-shadow:2px 2px #fff3e0;
 }
-.main{
+h2.subtitle {
+  font-size:1.2rem;
+  color:#ff6f91;
+  margin:0.2rem 0 1rem 0;
+  text-align:center;
+}
+.main {
   width:100%;
   max-width:1400px;
   display:flex;
@@ -29,289 +35,236 @@ h1{
   align-items:center;
   gap:1rem;
 }
-#teacherPanel{
-  display:flex;
-  gap:2rem;
-  width:95%;
-  max-width:1400px;
-  overflow-x:auto;
-  padding:0.5rem;
-}
-.wordBox{
+#teacherPanel {
   display:flex;
   flex-direction:column;
-  gap:0.5rem;
-  min-width:250px;
-}
-.wordBox input{
-  font-size:1.2rem;
-  padding:0.5rem;
-  width:100%;
-}
-#addWordBtn{
-  padding:0.7rem 1rem;
-  font-size:1.2rem;
-  border:none;
-  border-radius:12px;
-  background:#ffcc00;
-  cursor:pointer;
-}
-#addWordBtn:hover{background:#ffe066;}
-#teamsPanel{
-  display:flex;
-  gap:1rem;
-  flex-wrap:wrap;
-  margin-top:1rem;
-  justify-content:center;
-}
-.teamInput{
-  font-size:1.2rem;
-  padding:0.5rem;
-  width:150px;
-}
-.team{
-  padding:0.7rem 1rem;
-  border-radius:12px;
-  background:#6fcf97;
-  font-weight:700;
-  cursor:pointer;
-  transition:0.2s;
-}
-.team.current{
-  background:#81e0aa;
-  transform:scale(1.05);
-  color:white;
-}
-#numberPanel{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
-  gap:1rem;
+  gap:0.8rem;
+  max-height:400px;
+  overflow-y:auto;
   width:90%;
-  margin-top:1rem;
-}
-.numberBox{
+  background:#fff3e0;
   padding:1rem;
   border-radius:12px;
+}
+.questionRow {
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+}
+.questionNumber {
   font-weight:700;
+  min-width:60px;
+}
+.questionRow input {
+  font-size:1.2rem;
+  padding:0.5rem;
+  border-radius:8px;
+  border:2px solid #ffcc00;
+}
+.meaningInput { flex:1; }
+#addWordBtn {
   font-size:1.3rem;
-  text-align:center;
-  cursor:pointer;
+  padding:0.6rem 1rem;
+  border-radius:12px;
+  background:#ff6f61;
   color:white;
+  cursor:pointer;
+  border:none;
   transition:0.2s;
 }
-#questionPanel{
+#addWordBtn:hover { background:#ff857a; }
+#teamsPanel {
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.5rem;
+  justify-content:center;
+  margin:1rem 0;
+}
+.teamBtn {
+  font-size:1.5rem;
+  padding:0.8rem 1.2rem;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  transition:0.2s;
+}
+.teamBtn.current { transform:scale(1.1); box-shadow:0 0 10px #ffcc00; }
+.teamBtn:hover { opacity:0.85; }
+#questionsArea {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+  gap:0.5rem;
+  width:90%;
+  justify-items:center;
+}
+.questionBox {
+  font-size:1.2rem;
+  font-weight:700;
+  color:white;
+  text-align:center;
+  padding:1rem;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+#questionPanel {
   display:none;
   flex-direction:column;
   align-items:center;
-  gap:1rem;
-  margin-top:1rem;
-}
-#questionPanel button{
-  font-size:1.5rem;
-  padding:1rem 2rem;
-  border:none;
+  background:#fff3e0;
+  padding:1rem;
   border-radius:12px;
+  width:90%;
+  gap:0.8rem;
+}
+.answerBtn {
+  font-size:1.3rem;
+  padding:0.8rem;
+  width:80%;
+  border-radius:12px;
+  border:none;
   cursor:pointer;
-  background:#ff6f61;
-  color:white;
   transition:0.2s;
 }
-#questionPanel button:hover{background:#ff8b75;}
-#feedback{
-  margin-top:1rem;
-  font-size:1.5rem;
-  min-height:40px;
+.answerBtn:hover { opacity:0.85; }
+#feedback {
+  font-size:1.4rem;
+  min-height:30px;
   text-align:center;
-  font-weight:700;
+  margin-top:0.5rem;
 }
 </style>
 </head>
 <body>
 
-<h1>🌸 VocaFlip: VUS Hoa Binh Campus 🌼</h1>
+<h1>🍓 VocaFlip 🍓</h1>
+<h2 class="subtitle">VUS Hoa Binh Campus</h2>
 
 <div class="main">
 
-<!-- Teacher Panel -->
-<div id="teacherPanel">
-  <div class="wordBox">
-    <label>Word 1:</label>
-    <input type="text" placeholder="Enter word" class="wordInput">
-    <label>Meaning:</label>
-    <input type="text" placeholder="Enter meaning" class="meaningInput">
-  </div>
-  <button id="addWordBtn">+ Add Word</button>
-</div>
+<h2>Teacher Panel</h2>
+<div id="teacherPanel"></div>
+<button id="addWordBtn">+ Add Word</button>
 
-<!-- Teams -->
 <h2>Teams</h2>
-<div id="teamsPanel">
-  <input type="text" value="🍎 Team 1" class="teamInput" id="team1">
-  <input type="text" value="🍓 Team 2" class="teamInput" id="team2">
-  <input type="text" value="🌽 Team 3" class="teamInput" id="team3">
-  <button onclick="addTeamInput()">+ Add Team</button>
+<div id="teamsPanel"></div>
+<button id="addTeamBtn">+ Add Team</button>
+
+<h2>Questions</h2>
+<div id="questionsArea"></div>
+
+<div id="questionPanel">
+  <div id="questionMeaning" style="font-size:1.5rem;font-weight:600;text-align:center;"></div>
+  <button class="answerBtn" id="option1"></button>
+  <button class="answerBtn" id="option2"></button>
+  <button class="answerBtn" id="option3"></button>
 </div>
-
-<button onclick="startGame()">Start Game</button>
-
-<!-- Numbered Questions -->
-<div id="numberPanel"></div>
-
-<!-- Question Panel -->
-<div id="questionPanel"></div>
 
 <div id="feedback"></div>
-
+<button onclick="restartGame()">Restart</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-let questions=[], teams=[], scores=[], selectedTeam=null;
-const maxQuestions=25;
-let teamCount=3;
-const teamEmojis=["🍎","🍓","🌽","🥦","🍇","🍉","🍒","🍍","🥭","🌺","🌸","🌼"];
+let teacherQuestions=[], teams=[], scores=[], selectedTeam=null, currentQIndex=null;
+let teamEmojis=['🍎','🍓','🌽','🥦','🍇','🍉','🍒','🍍','🥭','🌸'];
 
-// ================= ADD WORD BOX =================
-document.getElementById("addWordBtn").onclick=function(){
-  const panel=document.getElementById("teacherPanel");
-  if(panel.querySelectorAll(".wordBox").length>=maxQuestions) return alert("Max 25 questions");
-  const box=document.createElement("div");
-  box.className="wordBox";
-  const n=panel.querySelectorAll(".wordBox").length+1;
-  box.innerHTML=`<label>Word ${n}:</label><input type="text" class="wordInput" placeholder="Enter word">
-  <label>Meaning:</label><input type="text" class="meaningInput" placeholder="Enter meaning">`;
-  panel.insertBefore(box, document.getElementById("addWordBtn"));
+// Teacher panel logic
+const teacherPanel=document.getElementById('teacherPanel');
+function addQuestionRow(word='',meaning=''){
+  const row=document.createElement('div');
+  row.className='questionRow';
+  const number=document.createElement('span');
+  number.className='questionNumber';
+  number.textContent='Word '+(teacherQuestions.length+1);
+  const wordInput=document.createElement('input');
+  wordInput.type='text';
+  wordInput.placeholder='Enter word';
+  wordInput.value=word;
+  const meaningInput=document.createElement('input');
+  meaningInput.type='text';
+  meaningInput.placeholder='Enter meaning';
+  meaningInput.className='meaningInput';
+  meaningInput.value=meaning;
+  row.append(number,wordInput,meaningInput);
+  teacherPanel.appendChild(row);
+  teacherQuestions.push({wordInput,meaningInput});
 }
+document.getElementById('addWordBtn').onclick=()=>{ if(teacherQuestions.length<25) addQuestionRow(); };
 
-// ================= ADD TEAM =================
-function addTeamInput(){
-  teamCount++;
-  if(teamCount>25) return;
-  const panel=document.getElementById("teamsPanel");
-  const input=document.createElement("input");
-  input.type="text";
-  input.className="teamInput";
-  const emoji=teamEmojis[(teamCount-1)%teamEmojis.length];
-  input.value=`${emoji} Team ${teamCount}`;
-  panel.insertBefore(input, panel.querySelector("button"));
-}
-
-// ================= START GAME =================
-function startGame(){
-  const wordBoxes=document.querySelectorAll(".wordBox");
-  questions=[];
-  wordBoxes.forEach(box=>{
-    const word=box.querySelector(".wordInput").value.trim();
-    const meaning=box.querySelector(".meaningInput").value.trim();
-    if(word && meaning){
-      // Generate 3 choices: word + 2 random others
-      let choices=[word];
-      const otherWords=wordBoxes.length>1 ? Array.from(wordBoxes).map(b=>b.querySelector(".wordInput").value.trim()).filter(w=>w!==word) : [];
-      while(choices.length<3 && otherWords.length>0){
-        const r=otherWords[Math.floor(Math.random()*otherWords.length)];
-        if(!choices.includes(r)) choices.push(r);
-      }
-      choices.sort(()=>Math.random()-0.5); // shuffle
-      questions.push({word, meaning, choices});
-    }
-  });
-  if(questions.length===0) return alert("Add at least one question");
-  
-  // Teams
-  teams=[];
-  scores=[];
-  const teamInputs=document.querySelectorAll(".teamInput");
-  teamInputs.forEach(input=>{
-    if(input.value.trim()) teams.push(input.value.trim());
-  });
-  scores=teams.map(_=>0);
-  selectedTeam=null;
-  renderTeams();
-  renderNumbers();
-  document.getElementById("teacherPanel").style.display="none";
-  document.getElementById("teamsPanel").style.display="flex";
-}
-
-// ================= RENDER TEAMS =================
+// Teams logic
+const teamsPanel=document.getElementById('teamsPanel');
 function renderTeams(){
-  const panel=document.getElementById("teamsPanel");
-  panel.querySelectorAll(".teamDisplay")?.forEach(el=>el.remove());
+  teamsPanel.innerHTML='';
   teams.forEach((t,i)=>{
-    const div=document.createElement("div");
-    div.className="team teamDisplay"+(i===selectedTeam?" current":"");
-    div.textContent=`${t}: ${scores[i]} pts`;
-    div.onclick=()=>{selectedTeam=i; renderTeams();}
-    panel.appendChild(div);
+    const btn=document.createElement('button');
+    btn.className='teamBtn'+(i===selectedTeam?' current':'');
+    btn.textContent=`${t.emoji} ${t.name}: ${scores[i]} pts`;
+    btn.onclick=()=>{ selectedTeam=i; renderTeams(); };
+    teamsPanel.appendChild(btn);
+  });
+}
+document.getElementById('addTeamBtn').onclick=()=>{
+  const name='Team '+(teams.length+1);
+  const emoji=teamEmojis[teams.length%teamEmojis.length];
+  teams.push({name,emoji});
+  scores.push(0);
+  renderTeams();
+};
+
+// Questions area
+const questionsArea=document.getElementById('questionsArea');
+function renderQuestions(){
+  questionsArea.innerHTML='';
+  teacherQuestions.forEach((q,i)=>{
+    const box=document.createElement('div');
+    box.className='questionBox';
+    box.textContent=i+1;
+    box.style.background=['#ff6f61','#ffcc00','#6feaff','#ff85a2','#6fff90'][i%5];
+    box.onclick=()=>{ showQuestion(i); };
+    questionsArea.appendChild(box);
   });
 }
 
-// ================= RENDER NUMBERED QUESTIONS =================
-function renderNumbers(){
-  const panel=document.getElementById("numberPanel");
-  panel.innerHTML="";
-  questions.forEach((q,i)=>{
-    const div=document.createElement("div");
-    div.className="numberBox";
-    div.textContent=i+1;
-    div.style.background=colorForIndex(i);
-    div.onclick=()=>showQuestion(i);
-    panel.appendChild(div);
-  });
-}
-
-// ================= COLOR CYCLE =================
-function colorForIndex(i){
-  const colors=["#ff6f61","#ffcc00","#6fcf97","#6fbff6","#ff99cc"];
-  return colors[i%colors.length];
-}
-
-// ================= SHOW QUESTION =================
+const questionPanel=document.getElementById('questionPanel');
+const qMeaning=document.getElementById('questionMeaning');
+const optionBtns=[document.getElementById('option1'),document.getElementById('option2'),document.getElementById('option3')];
 function showQuestion(index){
-  if(selectedTeam===null) return alert("Select your team first!");
-  document.getElementById("numberPanel").style.display="none";
-  const panel=document.getElementById("questionPanel");
-  panel.innerHTML="";
-  panel.style.display="flex";
-
-  const q=questions[index];
-  const meaningDiv=document.createElement("div");
-  meaningDiv.textContent=q.meaning;
-  meaningDiv.style.fontSize="2rem";
-  meaningDiv.style.fontWeight="700";
-  meaningDiv.style.textAlign="center";
-  panel.appendChild(meaningDiv);
-
-  q.choices.forEach(choice=>{
-    const btn=document.createElement("button");
-    btn.textContent=choice;
-    btn.onclick=()=>{
-      if(choice===q.word){
-        scores[selectedTeam]+=10;
-        showFeedback("✅ Correct!", true);
-      } else {
-        showFeedback(`❌ Wrong! Correct answer: ${q.word}`, false);
-      }
-      panel.style.display="none";
-      renderTeams();
-      document.getElementById("numberPanel").style.display="grid";
-    }
-    panel.appendChild(btn);
+  currentQIndex=index;
+  const q=teacherQuestions[index];
+  qMeaning.textContent=q.meaningInput.value;
+  // Randomize answer options
+  const correct=q.wordInput.value;
+  const fake=[...teacherQuestions.map(q=>q.wordInput.value).filter(w=>w!==correct)];
+  let opts=[correct,fake[Math.floor(Math.random()*fake.length)],fake[Math.floor(Math.random()*fake.length)]];
+  opts.sort(()=>Math.random()-0.5);
+  optionBtns.forEach((btn,i)=>{
+    btn.textContent=opts[i];
+    btn.style.background='#ffcc00';
+    btn.onclick=()=>{ checkAnswer(btn.textContent===correct); };
   });
+  questionPanel.style.display='flex';
+}
+function checkAnswer(isCorrect){
+  if(isCorrect){ 
+    document.getElementById('feedback').textContent='✅ Correct!';
+    confetti({particleCount:50,spread:60,origin:{y:0.6}});
+    scores[selectedTeam]+=10;
+    renderTeams();
+  } else {
+    document.getElementById('feedback').textContent='❌ Wrong!';
+  }
+  questionPanel.style.display='none';
 }
 
-// ================= FEEDBACK =================
-function showFeedback(text, correct){
-  const fb=document.getElementById("feedback");
-  fb.textContent=text;
-  if(correct){
-    confetti({
-      particleCount:50,
-      spread:70,
-      origin:{y:0.6},
-      colors:['#ff6f61','#ffcc00','#6fcf97','#6fbff6','#ff99cc']
-    });
-  }
-}
+function restartGame(){ window.location.reload(); }
+
+// Init
+addQuestionRow('skyscraper','tall building');
+addQuestionRow('elephant','large animal');
+addQuestionRow('pineapple','tropical fruit');
+renderTeams();
+renderQuestions();
 </script>
 </body>
 </html>
