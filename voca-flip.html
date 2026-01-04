@@ -2,325 +2,277 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>🌷 VocaFlip 🌷</title>
+<title>🌷 VocaFlip  🌷</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
   margin:0;
   font-family: 'Comic Sans MS', cursive, sans-serif;
-  background:#ffe4e1;
+  background:#fbe4f9;
   display:flex;
   flex-direction:column;
   align-items:center;
 }
-h1 {
+h1{
   font-size:3rem;
-  font-weight:bold;
-  color:#ff4d94;
+  color:#c4161c;
   margin:0.5rem;
   text-align:center;
 }
-h2 {
-  font-size:1.6rem;
-  color:#ff85a2;
-  margin:0.5rem;
+h2{
+  font-size:1.8rem;
+  margin:0.3rem;
+  color:#333;
 }
-#subtitle {
-  font-size:1.2rem;
-  color:#ff99c8;
+#subtitle{
+  font-size:1rem;
+  color:#555;
   margin-bottom:1rem;
 }
-.main {
-  width:100%;
+.main{
+  width:95%;
   max-width:1400px;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:1rem;
 }
-#teacherPanel {
+#rules{
+  background:#fff;
+  padding:1rem;
+  border-radius:12px;
+  font-size:1.2rem;
+  width:90%;
+  text-align:left;
+  box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
+}
+#teacherPanel{
   display:flex;
   flex-wrap:wrap;
-  gap:0.8rem;
+  gap:10px;
+  justify-content:center;
   max-height:400px;
   overflow-y:auto;
-  width:90%;
-  background:#fff0f5;
-  padding:1rem;
-  border-radius:12px;
+  width:95%;
+  margin-bottom:1rem;
 }
-.questionRow {
+.questionBox{
   display:flex;
   flex-direction:column;
-  align-items:center;
-  gap:0.3rem;
-  flex:1 1 calc(20% - 0.8rem); /* 5 per row */
-  min-width:200px;
+  align-items:flex-start;
+  width:200px;
+  background:#fff;
+  border-radius:10px;
+  padding:10px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
 }
-.questionRow input {
+.questionBox input{
   font-size:1rem;
-  padding:0.5rem;
-  border-radius:8px;
-  border:1px solid #ffb6c1;
+  margin-top:5px;
+  padding:5px;
   width:100%;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
-button {
-  font-size:1.3rem;
-  padding:0.7rem 1rem;
+#controls{
+  display:flex;
+  gap:10px;
+  margin:1rem;
+}
+button{
+  padding:10px 15px;
+  font-size:1.2rem;
   border:none;
-  border-radius:12px;
+  border-radius:8px;
   cursor:pointer;
-  margin:0.3rem;
   font-weight:bold;
 }
-button:hover {
-  transform: scale(1.05);
-  transition: 0.2s;
-}
-#startGameBtn { background:#ff6f61; color:white; }
-#addTeamBtn { background:#6feaff; color:#003a8f; }
-#restartBtn { background:#ffcc00; color:#003a8f; }
-
-#teams {
+#addTeamBtn{background:#ff7f50; color:white;}
+#startGameBtn{background:#ff69b4; color:white;}
+#restartBtn{background:#9370db; color:white;}
+#teams{
   display:flex;
   flex-wrap:wrap;
-  gap:1rem;
-  margin-top:1rem;
-}
-.team {
-  padding:0.5rem 1rem;
-  border-radius:12px;
-  cursor:pointer;
-  font-size:1.3rem;
-  font-weight:bold;
-  color:white;
-  display:flex;
-  align-items:center;
-  gap:0.5rem;
-}
-.team.current { border:3px solid #fff; box-shadow:0px 0px 10px #ff99c8; }
-
-#questionBoxes {
-  display:flex;
-  flex-wrap:wrap;
-  gap:1rem;
+  gap:10px;
   justify-content:center;
   margin-top:1rem;
+}
+.team{
+  padding:15px 20px;
+  font-size:1.3rem;
+  border-radius:10px;
+  cursor:pointer;
+  color:white;
+  font-weight:bold;
+}
+.team.current{
+  box-shadow: 0 0 10px gold;
+  transform: scale(1.1);
+}
+#cards{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
   width:90%;
+  justify-items:center;
+  margin-top:1rem;
 }
-.qBox {
-  background:#ffb6c1;
-  color:white;
-  font-weight:bold;
-  font-size:1.5rem;
+.card{
+  width:100%;
+  height:100px;
   border-radius:12px;
-  width:80px;
-  height:80px;
+  background:#ffb6c1;
   display:flex;
   justify-content:center;
   align-items:center;
-  cursor:pointer;
-  transition:0.3s;
-}
-.qBox.selected { background:#90ee90; }
-
-#questionPanel {
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  gap:1rem;
-  margin-top:1rem;
-  width:80%;
-  background:#fff0f5;
-  padding:1rem;
-  border-radius:12px;
-}
-.answerBtn {
-  font-size:1.5rem;
-  padding:1rem;
-  width:80%;
-  border-radius:12px;
-  cursor:pointer;
-  border:none;
   font-weight:bold;
-  transition:0.2s;
-  background:#ff85a2;
-  color:white;
+  font-size:1.5rem;
+  cursor:pointer;
+  color:#fff;
+  transition: transform 0.3s;
 }
-.answerBtn:hover { transform: scale(1.05); }
-#feedback { font-size:1.6rem; margin-top:1rem; min-height:30px; }
-
+.card.selected{
+  background:#32cd32;
+  transform: scale(1.05);
+}
+#feedback{
+  margin-top:1rem;
+  font-size:1.5rem;
+  min-height:30px;
+  text-align:center;
+  font-weight:bold;
+}
 </style>
 </head>
 <body>
 
-<h1>🌷 VocaFlip 🌷</h1>
+<h1>VocaFlip</h1>
 <div id="subtitle">VUS Hoa Binh Campus</div>
 
 <div class="main">
+<div id="rules">
+<strong>Rules:</strong>
+<ol>
+<li>Select your team by clicking its colorful button.</li>
+<li>Choose a numbered box to reveal the meaning of the word.</li>
+<li>Choose the correct answer from the 3 options displayed.</li>
+<li>Correct answer = +10 points with confetti!</li>
+<li>Teams take turns selecting boxes until all words are answered.</li>
+<li>The team with the highest points wins.</li>
+</ol>
+</div>
 
-<h2>Teacher Panel: Add Questions</h2>
+<h2>Teacher Panel: Add Words & Meanings</h2>
 <div id="teacherPanel">
-  <!-- Question boxes will appear here -->
+<!-- Question boxes will appear here -->
 </div>
-<div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
-  <button id="addQuestionBtn">+ Add Question</button>
-  <button id="startGameBtn">Start Game</button>
-  <button id="addTeamBtn">+ Add Team</button>
-  <button id="restartBtn">Restart</button>
+<div id="controls">
+<button id="addTeamBtn">Add Team</button>
+<button id="startGameBtn">Start Game</button>
+<button id="restartBtn">Restart</button>
 </div>
 
-<h2>Teams</h2>
 <div id="teams"></div>
-
-<div id="questionBoxes"></div>
-
-<div id="questionPanel">
-  <div id="questionText" style="font-size:2rem; text-align:center;"></div>
-  <div id="answerChoices" style="display:flex; flex-direction:column; gap:1rem;"></div>
-</div>
-
+<div id="cards"></div>
 <div id="feedback"></div>
 </div>
 
 <script>
-// GLOBAL VARIABLES
-let teacherQuestions = [];
+// Team emojis
+const emojis = ["🍎","🍓","🌽","🥦","🥝","🌸","🌼","🌻","🌺","🌷"];
 let teams = [];
 let scores = [];
 let selectedTeam = null;
-let emojis = ["🍎","🍓","🌽","🥦","🍉","🍍","🍇","🥭","🌻","🥝"];
-let questionIndex = null;
 
-// CREATE INITIAL QUESTIONS
-function createQuestionBox(number){
-  const div = document.createElement('div');
-  div.className = 'questionRow';
-  const wordInput = document.createElement('input');
-  wordInput.placeholder = `Word ${number}`;
-  const meaningInput = document.createElement('input');
-  meaningInput.placeholder = `Meaning ${number}`;
-  div.appendChild(wordInput);
-  div.appendChild(meaningInput);
-  teacherQuestions.push({div, wordInput, meaningInput});
-  document.getElementById('teacherPanel').appendChild(div);
+// Questions
+let questions = [];
+
+// Add question boxes dynamically
+for(let i=1;i<=3;i++){
+  addQuestionBox(i);
+}
+function addQuestionBox(num){
+  const div = document.createElement("div");
+  div.className="questionBox";
+  div.innerHTML=`<label>Word ${num}:</label><input type="text" placeholder="Word"><label>Meaning:</label><input type="text" placeholder="Meaning">`;
+  document.getElementById("teacherPanel").appendChild(div);
 }
 
-// INITIAL 3 QUESTIONS
-for(let i=1;i<=3;i++) createQuestionBox(i);
-
-// ADD QUESTION
-document.getElementById('addQuestionBtn').onclick = ()=>{
-  if(teacherQuestions.length>=25) return alert("Max 25 questions");
-  createQuestionBox(teacherQuestions.length+1);
-}
-
-// ADD TEAM
-document.getElementById('addTeamBtn').onclick = ()=>{
-  if(teams.length>=10) return alert("Max 10 teams");
-  const name = `Team ${teams.length+1}`;
+// Team adding
+document.getElementById("addTeamBtn").onclick = ()=>{
+  const name = prompt("Enter team name:")||`Team ${teams.length+1}`;
   const emoji = emojis[teams.length % emojis.length];
-  teams.push({name, emoji});
+  teams.push({name:name, emoji:emoji});
   scores.push(0);
   renderTeams();
 }
 
-// RENDER TEAMS
+// Start game
+document.getElementById("startGameBtn").onclick = ()=>{
+  // Gather questions
+  const boxes = document.querySelectorAll(".questionBox");
+  questions=[];
+  boxes.forEach(box=>{
+    const w = box.querySelectorAll("input")[0].value.trim();
+    const m = box.querySelectorAll("input")[1].value.trim();
+    if(w && m) questions.push({word:w, meaning:m, revealed:false});
+  });
+  if(questions.length===0) return alert("Add at least 1 word");
+  renderCards();
+}
+
+// Render teams
 function renderTeams(){
-  const div = document.getElementById('teams');
+  const div = document.getElementById("teams");
   div.innerHTML="";
   teams.forEach((t,i)=>{
-    const d = document.createElement('div');
-    d.className = 'team'+(i===selectedTeam?" current":"");
-    d.textContent = `${t.emoji} ${t.name}: ${scores[i]} pts`;
-    d.onclick=()=>{ selectedTeam=i; renderTeams(); };
+    const d = document.createElement("div");
+    d.className="team"+(i===selectedTeam?" current":"");
+    d.style.background=emojisColor(i);
+    d.textContent=`${t.emoji} ${t.name}: ${scores[i]} pts`;
+    d.onclick=()=>{selectedTeam=i; renderTeams();}
     div.appendChild(d);
   });
 }
-
-// START GAME
-document.getElementById('startGameBtn').onclick = ()=>{
-  // Filter out empty questions
-  teacherQuestions = teacherQuestions.filter(q=>q.wordInput.value.trim()!=="" && q.meaningInput.value.trim()!=="");
-  if(teacherQuestions.length===0) return alert("Add at least one question!");
-  renderQuestionBoxes();
-  // Disable inputs
-  teacherQuestions.forEach(q=>{q.wordInput.disabled=true; q.meaningInput.disabled=true;});
-  document.getElementById('feedback').textContent = 'Game Started! Choose a team and a question.';
+function emojisColor(i){
+  const colors=["#ff7f50","#ff69b4","#9370db","#3cb371","#ffa500","#ff1493","#00ced1","#ff6347"];
+  return colors[i%colors.length];
 }
 
-// RENDER NUMBERED QUESTION BOXES
-function renderQuestionBoxes(){
-  const div = document.getElementById('questionBoxes');
+// Render cards
+function renderCards(){
+  const div = document.getElementById("cards");
   div.innerHTML="";
-  teacherQuestions.forEach((q,i)=>{
-    const box = document.createElement('div');
-    box.className='qBox';
-    box.textContent=i+1;
-    box.onclick = ()=>{
-      document.querySelectorAll('.qBox').forEach(b=>b.classList.remove('selected'));
-      box.classList.add('selected');
-      showQuestion(i);
+  questions.forEach((q,i)=>{
+    const card = document.createElement("div");
+    card.className="card";
+    card.textContent=i+1;
+    card.onclick=()=>{
+      if(q.revealed) return;
+      if(selectedTeam===null) return alert("Select your team first!");
+      selectCard(card,q);
     }
-    div.appendChild(box);
+    div.appendChild(card);
   });
 }
 
-// SHOW QUESTION AND ANSWER CHOICES
-function showQuestion(i){
-  questionIndex = i;
-  const q = teacherQuestions[i];
-  const panel = document.getElementById('questionPanel');
-  panel.style.display='flex';
-  document.getElementById('questionText').textContent = q.meaningInput.value;
-
-  // Generate 3 choices (correct + 2 random)
-  const choices = [q.wordInput.value];
-  while(choices.length<3){
-    const r = teacherQuestions[Math.floor(Math.random()*teacherQuestions.length)].wordInput.value;
-    if(!choices.includes(r)) choices.push(r);
-  }
-  // Shuffle
-  choices.sort(()=>Math.random()-0.5);
-
-  const answerDiv = document.getElementById('answerChoices');
-  answerDiv.innerHTML="";
-  choices.forEach(c=>{
-    const btn = document.createElement('button');
-    btn.className='answerBtn';
-    btn.textContent=c;
-    btn.onclick=()=>{checkAnswer(c);};
-    answerDiv.appendChild(btn);
-  });
-}
-
-// CHECK ANSWER
-function checkAnswer(ans){
-  const correct = teacherQuestions[questionIndex].wordInput.value;
-  if(ans===correct){
-    document.getElementById('feedback').textContent='✅ Correct!';
+function selectCard(card,q){
+  card.classList.add("selected");
+  // show choices
+  const options = [q.word, "option2", "option3"];
+  const choice = prompt(`Meaning: ${q.meaning}\nChoose the correct word:\n1.${options[0]}  2.${options[1]}  3.${options[2]}`);
+  if(choice && choice.trim()===q.word){
     scores[selectedTeam]+=10;
-  } else {
-    document.getElementById('feedback').textContent=`❌ Wrong! Answer: ${correct}`;
+    document.getElementById("feedback").textContent="✅ Correct! +10 points";
+  }else{
+    document.getElementById("feedback").textContent=`❌ Wrong! The word was: ${q.word}`;
   }
+  q.revealed=true;
   renderTeams();
-  // small confetti
-  launchConfetti(1);
 }
 
-// RESTART
-document.getElementById('restartBtn').onclick = ()=>{ location.reload(); }
-
-// SIMPLE CONFETTI FUNCTION
-function launchConfetti(seconds){
-  // for simplicity, just flashes background color
-  const body = document.body;
-  const orig = body.style.background;
-  body.style.background='#ffff66';
-  setTimeout(()=>{body.style.background=orig;}, seconds*1000);
-}
+document.getElementById("restartBtn").onclick = ()=>location.reload();
 </script>
+
 </body>
 </html>
-
-
