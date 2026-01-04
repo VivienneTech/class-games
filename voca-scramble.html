@@ -7,7 +7,7 @@
 <style>
 body {
   margin:0;
-  font-family: "Comic Sans MS", system-ui;
+  font-family:"Comic Sans MS", system-ui;
   background: linear-gradient(#fff7e6,#ffe0b2);
   text-align:center;
 }
@@ -38,11 +38,12 @@ button:hover{background:#2e7d32;}
 }
 .card.revealed{background:#42a5f5;}
 #choices{margin-top:1rem;font-size:1.3rem;}
-.choice{background:#ffd54f;color:#000;font-size:1.3rem;margin:0.3rem;}
-.choice:hover{background:#ffb300;}
 #feedback{font-size:1.8rem;margin:1rem;min-height:40px;}
-#winnerScreen{display:none;font-size:3rem;color:#2e7d32;margin-top:1rem;}
-canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;}
+#winnerScreen{
+  display:none;font-size:3rem;color:#2e7d32;margin-top:1rem;
+  position:relative; z-index:10;
+}
+canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:5;}
 .flex-container{display:flex; gap:1rem; width:100%; flex-wrap:nowrap;}
 #teamSection{flex:1; min-width:300px; max-height:900px; overflow-y:auto; background:#fff3e0; padding:1rem; border-radius:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}
 #wordsSection{flex:3; min-width:700px; max-height:900px; overflow-y:auto; background:#fff3e0; padding:1rem; border-radius:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}
@@ -52,6 +53,11 @@ canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;}
 }
 #teamSetup input{font-size:1.3rem; padding:0.5rem; width:70%; margin-left:0.5rem;}
 #teamSetup select{font-size:1.5rem; padding:0.5rem;}
+.choice{
+  background:#ffd54f;color:#000;font-size:2rem;margin:0.3rem 0;
+  display:block;width:100%;padding:1rem;border:none;border-radius:12px;cursor:pointer;
+}
+.choice:hover{background:#ffb300;}
 </style>
 </head>
 <body>
@@ -81,7 +87,7 @@ canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;}
 
     <!-- ENTER WORDS SECTION -->
     <div id="wordsSection">
-      <h2>Enter Words (5x5 Grid)</h2>
+      <h2>Enter Words</h2>
       <div id="wordsGrid"></div>
       <button onclick="addWordBox()">➕ Add Word</button>
     </div>
@@ -98,7 +104,7 @@ canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;}
 
 <canvas id="confetti"></canvas>
 
-<!-- 🔊 Sounds -->
+<!-- Sounds -->
 <audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
 <audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
 <audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/ta_da.ogg"></audio>
@@ -109,6 +115,7 @@ let teams=[], scores=[], selectedTeam=null;
 let currentAnswerIndex=null;
 let currentCard=null;
 const fruitsVeggies=["🍎","🍓","🍇","🍉","🍒","🍍","🥝","🌽","🥦","🥭"];
+let particles=[];
 
 // ---------- TEAMS ----------
 function addTeam(){
@@ -134,7 +141,6 @@ function addWordBox(value=""){
   input.addEventListener('input',()=>{input.value=input.value.toLowerCase()});
   grid.appendChild(input);
 }
-// Fill 25 boxes
 for(let i=0;i<25;i++){addWordBox();}
 
 // ---------- GAME LOGIC ----------
@@ -183,7 +189,12 @@ function renderCards(){
     const c=document.createElement("div");
     c.className="card";
     c.textContent=s;
-    c.onclick=()=>revealCard(c,i);
+    c.onclick=()=>{
+      // Highlight selected card green
+      document.querySelectorAll(".card").forEach(card=>{if(!card.classList.contains("revealed")) card.style.backgroundColor="#ef5350"});
+      c.style.backgroundColor="#66bb6a";
+      revealCard(c,i);
+    };
     div.appendChild(c);
   });
 }
@@ -206,10 +217,10 @@ function showChoices(){
     if(!options.includes(r)) options.push(r);
   }
   options.sort(()=>Math.random()-0.5);
-  options.forEach((o,idx)=>{
+  options.forEach((o)=>{
     const b=document.createElement("button");
     b.className="choice";
-    b.textContent=`${idx+1}. ${o}`;
+    b.textContent=o;
     b.onclick=()=>checkAnswer(o);
     div.appendChild(b);
   });
@@ -218,12 +229,13 @@ function showChoices(){
 function checkAnswer(choice){
   currentCard.classList.add("revealed");
   currentCard.textContent=correct[currentAnswerIndex];
+  currentCard.style.backgroundColor="#42a5f5";
   document.getElementById("choices").innerHTML="";
   if(choice.includes(correct[currentAnswerIndex])){
     scores[selectedTeam]+=10;
     document.getElementById("correctSound").play();
     document.getElementById("feedback").textContent="✅ Correct! +10";
-    launchConfetti();
+    launchConfetti(300);
   } else {
     document.getElementById("wrongSound").play();
     document.getElementById("feedback").textContent=`❌ Wrong! Answer was "${correct[currentAnswerIndex]}"`;
@@ -241,27 +253,28 @@ function checkWin(){
     const ws=document.getElementById("winnerScreen");
     ws.style.display="block";
     ws.textContent=`🏆 WINNER: ${winner} 🏆`;
-    launchConfetti();
+    launchConfetti(500); // more confetti
+    setTimeout(()=>{particles=[]}, 4000);
   }
 }
 
 // ---------- CONFETTI ----------
 const canvas=document.getElementById("confetti");
 const ctx=canvas.getContext("2d");
-let particles=[];
 function resizeCanvas(){canvas.width=window.innerWidth; canvas.height=window.innerHeight;}
 window.addEventListener("resize",resizeCanvas);
 resizeCanvas();
-function launchConfetti(){
-  for(let i=0;i<100;i++){
+function launchConfetti(count){
+  for(let i=0;i<count;i++){
     particles.push({
       x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height- canvas.height,
+      y: Math.random()*50,
       r: Math.random()*6+4,
       d: Math.random()*10+5,
-      color:`hsl(${Math.random()*360}, 100%, 50%)`,
+      color:`hsl(${Math.random()*360},100%,50%)`,
       tilt: Math.random()*10-10,
-      tiltAngleIncrement: Math.random()*0.07+0.05
+      tiltAngle:0,
+      tiltAngleIncrement:Math.random()*0.07+0.05
     });
   }
 }
@@ -271,13 +284,13 @@ function drawConfetti(){
     ctx.beginPath();
     ctx.lineWidth=p.r/2;
     ctx.strokeStyle=p.color;
-    ctx.moveTo(p.x+p.tilt+p.r/4, p.y);
-    ctx.lineTo(p.x+p.tilt, p.y+p.tilt+p.r/2);
+    ctx.moveTo(p.x+p.tilt+p.r/4,p.y);
+    ctx.lineTo(p.x+p.tilt,p.y+p.tilt+p.r/2);
     ctx.stroke();
     p.tiltAngle+=p.tiltAngleIncrement;
     p.y += (Math.cos(p.d)+1+ p.r/2)/2;
     p.x += Math.sin(p.tiltAngle)*2;
-    if(p.y>canvas.height) p.y=-10;
+    if(p.y>canvas.height)p.y=-10;
   });
   requestAnimationFrame(drawConfetti);
 }
