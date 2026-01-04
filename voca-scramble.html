@@ -5,38 +5,37 @@
 <title>VocaScramble 🌸 Kids Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
+body {
   margin:0;
   font-family: "Comic Sans MS", system-ui;
   background: linear-gradient(#fff7e6,#ffe0b2);
   text-align:center;
 }
-h1{color:#e53935;font-size:3rem;margin:0.5rem;}
+h1{color:#e53935;font-size:3rem;margin:0.2rem;}
 h3{color:#fb8c00;margin-top:0px;}
-.main{max-width:1400px;margin:auto;padding:1rem;}
+.main{max-width:1600px;margin:auto;padding:1rem;}
 #rules{
-  background:#fff3e0;
-  padding:1rem;
-  border-radius:15px;
-  box-shadow:0 4px 6px rgba(0,0,0,0.1);
-  font-size:1.2rem;
-  margin-bottom:1rem;
-  text-align:left;
+  background:#fff3e0; padding:1rem; border-radius:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);
+  font-size:1.2rem; margin-bottom:1rem; text-align:left;
 }
-button{font-size:1.2rem;padding:0.5rem 1rem;margin:0.3rem;border:none;border-radius:12px;cursor:pointer;background:#43a047;color:white;}
+button{
+  font-size:1.2rem; padding:0.5rem 1rem; margin:0.3rem; border:none; border-radius:12px; cursor:pointer;
+  background:#43a047; color:white;
+}
 button:hover{background:#2e7d32;}
 #scoreboard{
-  display:flex;
-  justify-content:center;
-  gap:1rem;
-  flex-wrap:wrap;
-  font-size:1.8rem;
-  margin:1rem 0;
+  display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; font-size:2rem; margin:1rem 0;
 }
-.team{padding:0.6rem 1rem;border-radius:15px;background:#fff;border:3px solid #ffb74d;cursor:pointer;font-size:1.3rem;}
+.team{
+  padding:1rem; border-radius:15px; background:#fff; border:3px solid #ffb74d;
+  cursor:pointer; font-size:1.5rem; display:flex; align-items:center; gap:0.5rem;
+}
 .team.current{background:#ff7043;color:white;font-weight:bold;}
-#cards{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;width:90%;margin:auto;}
-.card{background:#ef5350;color:white;font-size:1.5rem;font-weight:bold;border-radius:15px;height:110px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+#cards{display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; width:90%; margin:auto; margin-top:1rem;}
+.card{
+  background:#ef5350;color:white;font-size:1.5rem;font-weight:bold;
+  border-radius:15px;height:110px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
 .card.revealed{background:#42a5f5;}
 #choices{margin-top:1rem;font-size:1.3rem;}
 .choice{background:#ffd54f;color:#000;font-size:1.3rem;margin:0.3rem;}
@@ -44,13 +43,15 @@ button:hover{background:#2e7d32;}
 #feedback{font-size:1.8rem;margin:1rem;min-height:40px;}
 #winnerScreen{display:none;font-size:3rem;color:#2e7d32;margin-top:1rem;}
 canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;}
-input{border-radius:8px;border:2px solid #ccc;}
-.flex-container{display:flex; gap:1rem; width:100%; flex-wrap:wrap;}
-#teamSection{flex:1; min-width:200px; max-height:800px; overflow-y:auto; background:#fff3e0; padding:1rem; border-radius:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}
-#wordsSection{flex:3; min-width:500px; max-height:800px; overflow-y:auto; background:#fff3e0; padding:1rem; border-radius:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}
-#wordsInputBoxes{display:flex; flex-direction:column; gap:5px;}
-#wordsInputBoxes input{font-size:1.3rem; padding:0.5rem; width:100%; box-sizing:border-box;}
-#teamSetup select, #teamSetup input{font-size:1.3rem; padding:0.5rem; width:90%; margin-bottom:0.3rem;}
+.flex-container{display:flex; gap:1rem; width:100%; flex-wrap:nowrap;}
+#teamSection{flex:1; min-width:300px; max-height:900px; overflow-y:auto; background:#fff3e0; padding:1rem; border-radius:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}
+#wordsSection{flex:3; min-width:700px; max-height:900px; overflow-y:auto; background:#fff3e0; padding:1rem; border-radius:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}
+#wordsGrid{display:grid; grid-template-columns:repeat(5,1fr); gap:5px;}
+#wordsGrid input{
+  font-size:1.3rem; padding:0.8rem; width:100%; box-sizing:border-box; text-align:center;
+}
+#teamSetup input{font-size:1.3rem; padding:0.5rem; width:70%; margin-left:0.5rem;}
+#teamSetup select{font-size:1.5rem; padding:0.5rem;}
 </style>
 </head>
 <body>
@@ -80,12 +81,12 @@ input{border-radius:8px;border:2px solid #ccc;}
 
     <!-- ENTER WORDS SECTION -->
     <div id="wordsSection">
-      <h2>Enter Words (1 per box, max 25)</h2>
-      <div id="wordsInputBoxes"></div>
+      <h2>Enter Words (5x5 Grid)</h2>
+      <div id="wordsGrid"></div>
       <button onclick="addWordBox()">➕ Add Word</button>
     </div>
   </div>
-  <br>
+
   <button onclick="startGame()">▶ Start Game</button>
 
   <div id="scoreboard"></div>
@@ -107,13 +108,12 @@ let correct=[], scrambled=[];
 let teams=[], scores=[], selectedTeam=null;
 let currentAnswerIndex=null;
 let currentCard=null;
-
 const fruitsVeggies=["🍎","🍓","🍇","🍉","🍒","🍍","🥝","🌽","🥦","🥭"];
 
-// ---------------- TEAM SETUP ----------------
+// ---------- TEAMS ----------
 function addTeam(){
   const div=document.createElement("div");
-  div.className="teamRow";
+  div.style.display="flex"; div.style.alignItems="center"; div.style.marginBottom="5px";
   div.innerHTML=`
     <select>${fruitsVeggies.map(e=>`<option>${e}</option>`).join("")}</select>
     <input placeholder="Team name">
@@ -122,25 +122,26 @@ function addTeam(){
 }
 addTeam(); addTeam();
 
-// ---------------- WORD BOX SETUP ----------------
+// ---------- WORDS ----------
 function addWordBox(value=""){
-  const div=document.getElementById("wordsInputBoxes");
-  const index=div.children.length/2 + 1; // numbering
+  const grid=document.getElementById("wordsGrid");
+  const index=grid.children.length+1;
+  if(index>25) return;
   const input=document.createElement("input");
   input.type="text";
-  input.placeholder=`Word ${index}`;
+  input.placeholder=index;
   input.value=value;
   input.addEventListener('input',()=>{input.value=input.value.toLowerCase()});
-  div.appendChild(input);
-  div.appendChild(document.createElement("br"));
+  grid.appendChild(input);
 }
-// add 3 example words
-addWordBox("biggest"); addWordBox("fastest"); addWordBox("happiest");
+// Fill 25 boxes
+for(let i=0;i<25;i++){addWordBox();}
 
-// ---------------- GAME LOGIC ----------------
+// ---------- GAME LOGIC ----------
 function shuffleWord(word){return word.split('').sort(()=>Math.random()-0.5).join('');}
+
 function startGame(){
-  correct=Array.from(document.querySelectorAll("#wordsInputBoxes input"))
+  correct=Array.from(document.querySelectorAll("#wordsGrid input"))
           .map(i=>i.value.trim())
           .filter(w=>w!=="")
           .slice(0,25);
@@ -148,7 +149,7 @@ function startGame(){
   scrambled=correct.map(w=>shuffleWord(w));
 
   teams=[]; scores=[];
-  document.querySelectorAll(".teamRow").forEach(r=>{
+  document.querySelectorAll("#teamSetup div").forEach(r=>{
     const emoji=r.children[0].value;
     const name=r.children[1].value||"Team";
     teams.push(`${emoji} ${name}`);
@@ -161,7 +162,7 @@ function startGame(){
   document.getElementById("winnerScreen").style.display="none";
 }
 
-// ---------------- SCOREBOARD ----------------
+// ---------- SCOREBOARD ----------
 function renderScoreboard(){
   const div=document.getElementById("scoreboard");
   div.innerHTML="";
@@ -169,14 +170,12 @@ function renderScoreboard(){
     const d=document.createElement("div");
     d.className="team"+(i===selectedTeam?" current":"");
     d.textContent=`${t}: ${scores[i]}`;
-    d.style.fontSize="1.5rem";
-    d.style.padding="0.8rem 1.2rem"; // bigger for side-by-side
-    d.onclick=()=>{selectedTeam=i;renderScoreboard();}
+    d.onclick=()=>{selectedTeam=i; renderScoreboard();}
     div.appendChild(d);
   });
 }
 
-// ---------------- CARDS ----------------
+// ---------- CARDS ----------
 function renderCards(){
   const div=document.getElementById("cards");
   div.innerHTML="";
@@ -189,7 +188,7 @@ function renderCards(){
   });
 }
 
-// ---------------- CHOICES ----------------
+// ---------- CHOICES ----------
 function revealCard(card,i){
   if(card.classList.contains("revealed")) return;
   if(selectedTeam===null) return alert("Select a team!");
@@ -217,17 +216,15 @@ function showChoices(){
 }
 
 function checkAnswer(choice){
-  const div=document.getElementById("choices");
-  div.innerHTML="";
   currentCard.classList.add("revealed");
   currentCard.textContent=correct[currentAnswerIndex];
-
+  document.getElementById("choices").innerHTML="";
   if(choice.includes(correct[currentAnswerIndex])){
     scores[selectedTeam]+=10;
     document.getElementById("correctSound").play();
     document.getElementById("feedback").textContent="✅ Correct! +10";
     launchConfetti();
-  }else{
+  } else {
     document.getElementById("wrongSound").play();
     document.getElementById("feedback").textContent=`❌ Wrong! Answer was "${correct[currentAnswerIndex]}"`;
   }
@@ -241,24 +238,25 @@ function checkWin(){
     const max=Math.max(...scores);
     const winner=teams[scores.indexOf(max)];
     document.getElementById("winSound").play();
-    document.getElementById("winnerScreen").style.display="block";
-    document.getElementById("winnerScreen").textContent=`🏆 WINNER: ${winner} 🏆`;
+    const ws=document.getElementById("winnerScreen");
+    ws.style.display="block";
+    ws.textContent=`🏆 WINNER: ${winner} 🏆`;
     launchConfetti();
   }
 }
 
-// ---------------- CONFETTI ----------------
-const confettiCanvas=document.getElementById("confetti");
-const ctx=confettiCanvas.getContext("2d");
-let confettiParticles=[];
-function resizeCanvas(){confettiCanvas.width=window.innerWidth; confettiCanvas.height=window.innerHeight;}
+// ---------- CONFETTI ----------
+const canvas=document.getElementById("confetti");
+const ctx=canvas.getContext("2d");
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth; canvas.height=window.innerHeight;}
 window.addEventListener("resize",resizeCanvas);
 resizeCanvas();
 function launchConfetti(){
   for(let i=0;i<100;i++){
-    confettiParticles.push({
-      x: Math.random()*confettiCanvas.width,
-      y: Math.random()*confettiCanvas.height- confettiCanvas.height,
+    particles.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height- canvas.height,
       r: Math.random()*6+4,
       d: Math.random()*10+5,
       color:`hsl(${Math.random()*360}, 100%, 50%)`,
@@ -268,8 +266,8 @@ function launchConfetti(){
   }
 }
 function drawConfetti(){
-  ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
-  confettiParticles.forEach(p=>{
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
     ctx.beginPath();
     ctx.lineWidth=p.r/2;
     ctx.strokeStyle=p.color;
@@ -279,7 +277,7 @@ function drawConfetti(){
     p.tiltAngle+=p.tiltAngleIncrement;
     p.y += (Math.cos(p.d)+1+ p.r/2)/2;
     p.x += Math.sin(p.tiltAngle)*2;
-    if(p.y>confettiCanvas.height) p.y=-10;
+    if(p.y>canvas.height) p.y=-10;
   });
   requestAnimationFrame(drawConfetti);
 }
