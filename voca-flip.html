@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaFlip: Vocabulary Game</title>
+<title>🌸🌼🌷 VocaFlip 🌷🌼🌸</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
@@ -15,13 +15,13 @@ body {
   flex-direction: column;
   align-items: center;
 }
-h1 {
+h1{
   color:#c4161c;
   font-size:3rem;
-  margin:0.5rem;
+  margin:0.2rem;
   text-align:center;
 }
-h2 {
+h2{
   color:#003a8f;
   font-size:1.5rem;
   margin:0.2rem;
@@ -44,16 +44,19 @@ h2 {
 }
 #teacherPanel{
   display:flex;
-  flex-wrap:wrap;
+  flex-direction:column;
   gap:0.5rem;
   width:90%;
-  justify-content:flex-start;
-  margin-top:1rem;
+  max-height:400px;
+  overflow-y:auto;
+  border:2px solid #003a8f;
+  padding:0.5rem;
+  border-radius:12px;
+  background:#fff;
 }
 .wordRow{
   display:flex;
   gap:0.5rem;
-  margin-bottom:0.3rem;
 }
 .wordRow input{
   font-size:1.1rem;
@@ -78,7 +81,7 @@ button:hover{background:#c4161c;}
   display:flex;
   gap:1rem;
   margin-top:1rem;
-  font-size:1.3rem;
+  font-size:1.4rem;
   flex-wrap:wrap;
 }
 .team{
@@ -86,14 +89,14 @@ button:hover{background:#c4161c;}
   border-radius:12px;
   background:#ddd;
   cursor:pointer;
-  font-size:1.4rem;
+  font-size:1.5rem;
+  transition: transform 0.3s;
 }
 .team.current{
   background:#003a8f;
   color:white;
   font-weight:700;
   transform: scale(1.1);
-  transition: transform 0.3s;
 }
 #numberedBoxes{
   display:grid;
@@ -117,24 +120,47 @@ button:hover{background:#c4161c;}
   background:green;
   transform: scale(1.1);
 }
+.numberBox.revealed{
+  background:#6c757d;
+  cursor:default;
+}
 .numberBox:hover{
   box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 #meaningPanel{
   margin-top:1rem;
-  background:#003a8f;
-  color:white;
-  border-radius:12px;
-  padding:1rem;
-  font-size:1.5rem;
-  width:90%;
-  max-width:800px;
-  min-height:120px;
   display:none;
   flex-direction:column;
   align-items:center;
   gap:0.5rem;
+}
+.card{
+  perspective:1000px;
+}
+.card-inner{
+  width:100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.card.flipped .card-inner{
+  transform: rotateY(180deg);
+}
+.card-front, .card-back{
+  padding:0.7rem 1rem;
+  border-radius:12px;
+  font-size:1.5rem;
   text-align:center;
+  min-width:200px;
+  backface-visibility:hidden;
+  color:white;
+  font-weight:bold;
+}
+.card-front{
+  background:#003a8f;
+}
+.card-back{
+  background:#28a745;
+  transform:rotateY(180deg);
 }
 .choiceBtn{
   padding:0.7rem 1rem;
@@ -143,6 +169,7 @@ button:hover{background:#c4161c;}
   font-size:1.4rem;
   cursor:pointer;
   transition: transform 0.2s;
+  margin:0.2rem;
 }
 .choiceBtn:hover{
   transform: scale(1.05);
@@ -159,7 +186,7 @@ button:hover{background:#c4161c;}
 </head>
 <body>
 
-<h1>🌸 VocaFlip 🌸</h1>
+<h1>🌸🌼🌷 VocaFlip 🌷🌼🌸</h1>
 <h2>VUS Hoa Binh Campus</h2>
 
 <div class="main">
@@ -169,32 +196,36 @@ button:hover{background:#c4161c;}
 <ol>
 <li>Teacher enters words and meanings in the panel below (Word Box then Meaning Box).</li>
 <li>Students choose a numbered box.</li>
-<li>The meaning appears along with 3 answer choices.</li>
-<li>Students pick the correct answer. Teacher clicks it to reveal correctness.</li>
+<li>The meaning appears with 3 answer choices.</li>
+<li>Students pick the correct answer. Teacher clicks to reveal correctness.</li>
 <li>Correct = +10 points, wrong = 0 points.</li>
-<li>Teams take turns selecting boxes until all boxes are used.</li>
+<li>Teams take turns selecting boxes until all are answered.</li>
 </ol>
 </div>
 
 <h2>Enter Words</h2>
-<div id="teacherPanel">
-<!-- Word boxes will be added dynamically -->
-</div>
+<div id="teacherPanel"></div>
 <button onclick="addQuestion()">+ Add Question</button>
 <button onclick="startGame()">Start Game</button>
 
 <h2>Teams</h2>
 <div id="teamInputs">
-<input type="text" value="Team 1" id="team1">
-<input type="text" value="Team 2" id="team2">
-<input type="text" value="Team 3" id="team3">
+<input type="text" value="🍎 Team 1" id="team1">
+<input type="text" value="🍓 Team 2" id="team2">
+<input type="text" value="🌽 Team 3" id="team3">
+<input type="text" value="🥦 Team 4" id="team4">
 </div>
 <div id="teams"></div>
 
 <div id="numberedBoxes"></div>
 
 <div id="meaningPanel">
-<div id="meaningText"></div>
+<div id="meaningText" class="card">
+  <div class="card-inner">
+    <div class="card-front"></div>
+    <div class="card-back"></div>
+  </div>
+</div>
 <div id="choicesContainer" style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;"></div>
 </div>
 
@@ -214,33 +245,25 @@ let questions=[], teams=[], scores=[], selectedTeam=null;
 let currentQuestion=null;
 
 function addQuestion(){
-  const panel = document.getElementById("teacherPanel");
-  const row = document.createElement("div");
+  const panel=document.getElementById("teacherPanel");
+  const row=document.createElement("div");
   row.className="wordRow";
-
-  const wordInput = document.createElement("input");
-  wordInput.type="text";
-  wordInput.placeholder="Word";
-  wordInput.className="wordInput";
-
-  const meaningInput = document.createElement("input");
-  meaningInput.type="text";
-  meaningInput.placeholder="Meaning";
-  meaningInput.className="meaningInput";
-
-  row.appendChild(wordInput);
-  row.appendChild(meaningInput);
+  const wordInput=document.createElement("input");
+  wordInput.type="text"; wordInput.placeholder="Word"; wordInput.className="wordInput";
+  const meaningInput=document.createElement("input");
+  meaningInput.type="text"; meaningInput.placeholder="Meaning"; meaningInput.className="meaningInput";
+  row.appendChild(wordInput); row.appendChild(meaningInput);
   panel.appendChild(row);
 }
 
 function startGame(){
-  const panel = document.getElementById("teacherPanel");
-  const rows = panel.querySelectorAll(".wordRow");
+  const panel=document.getElementById("teacherPanel");
+  const rows=panel.querySelectorAll(".wordRow");
   questions=[];
   rows.forEach(r=>{
-    const word = r.querySelector(".wordInput").value.trim();
-    const meaning = r.querySelector(".meaningInput").value.trim();
-    if(word && meaning) questions.push({word, meaning, revealed:false});
+    const word=r.querySelector(".wordInput").value.trim();
+    const meaning=r.querySelector(".meaningInput").value.trim();
+    if(word && meaning) questions.push({word,meaning,revealed:false});
   });
   if(questions.length===0) return alert("Enter at least one word and meaning!");
 
@@ -251,38 +274,37 @@ function startGame(){
   }
 
   // Teams
-  teams = [document.getElementById("team1").value||"Team 1",
-           document.getElementById("team2").value||"Team 2",
-           document.getElementById("team3").value||"Team 3"].filter(t=>t!=="");
-  scores = teams.map(_=>0);
-  selectedTeam = null;
+  teams=[
+    document.getElementById("team1").value||"Team 1",
+    document.getElementById("team2").value||"Team 2",
+    document.getElementById("team3").value||"Team 3",
+    document.getElementById("team4").value||"Team 4"
+  ].filter(t=>t!=="");
+  scores=teams.map(_=>0); selectedTeam=null;
 
-  renderTeams();
-  renderNumberedBoxes();
-  document.getElementById("teacherPanel").style.display="none";
-  document.getElementById("teamInputs").style.display="none";
+  renderTeams(); renderNumberedBoxes();
+  panel.style.display="none"; document.getElementById("teamInputs").style.display="none";
 }
 
 function renderTeams(){
-  const div = document.getElementById("teams");
+  const div=document.getElementById("teams");
   div.innerHTML="";
   teams.forEach((t,i)=>{
     const d=document.createElement("div");
     d.className="team"+(i===selectedTeam?" current":"");
-    d.textContent = `${t}: ${scores[i]} pts`;
-    d.onclick=()=>{ selectedTeam=i; renderTeams(); }
+    d.textContent=t + ": "+scores[i]+" pts";
+    d.onclick=()=>{ selectedTeam=i; renderTeams(); };
     div.appendChild(d);
   });
 }
 
 function renderNumberedBoxes(){
-  const div = document.getElementById("numberedBoxes");
+  const div=document.getElementById("numberedBoxes");
   div.innerHTML="";
   questions.forEach((q,i)=>{
-    const box = document.createElement("div");
-    box.className="numberBox";
-    box.textContent=i+1;
-    box.onclick=()=> selectQuestion(i, box);
+    const box=document.createElement("div");
+    box.className="numberBox"; box.textContent=i+1;
+    box.onclick=()=> selectQuestion(i,box);
     div.appendChild(box);
   });
 }
@@ -290,42 +312,29 @@ function renderNumberedBoxes(){
 function selectQuestion(index, box){
   if(!selectedTeam) return alert("Select a team first!");
   if(questions[index].revealed) return;
-  // Highlight selected box
   document.querySelectorAll(".numberBox").forEach(b=>b.classList.remove("selected"));
   box.classList.add("selected");
-
   currentQuestion=index;
   showMeaningPanel(questions[index]);
 }
 
 function showMeaningPanel(question){
-  const panel = document.getElementById("meaningPanel");
-  panel.style.display="flex";
-  document.getElementById("meaningText").textContent=question.meaning;
+  const panel=document.getElementById("meaningPanel"); panel.style.display="flex";
+  const front=document.querySelector(".card-front");
+  const back=document.querySelector(".card-back");
+  front.textContent=question.meaning;
+  back.textContent=question.word;
+  document.querySelector(".card-inner").classList.remove("flipped");
 
-  // Prepare 3 choices
-  const container = document.getElementById("choicesContainer");
-  container.innerHTML="";
-  let choices = [question.word];
-
-  // pick 2 random wrong words
-  const wrongs = questions.filter(q=>q.word!==question.word).map(q=>q.word);
-  for(let i=0;i<2;i++){
-    const w = wrongs.splice(Math.floor(Math.random()*wrongs.length),1)[0];
-    choices.push(w);
-  }
-
-  // Shuffle choices
-  for(let i=choices.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [choices[i],choices[j]]=[choices[j],choices[i]];
-  }
+  const container=document.getElementById("choicesContainer"); container.innerHTML="";
+  let choices=[question.word];
+  const wrongs=questions.filter(q=>q.word!==question.word).map(q=>q.word);
+  for(let i=0;i<2;i++){ const w=wrongs.splice(Math.floor(Math.random()*wrongs.length),1)[0]; choices.push(w); }
+  for(let i=choices.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [choices[i],choices[j]]=[choices[j],choices[i]]; }
 
   choices.forEach(c=>{
-    const btn = document.createElement("button");
-    btn.className="choiceBtn";
-    btn.textContent=c;
-    btn.onclick=()=> handleChoice(btn, question);
+    const btn=document.createElement("button"); btn.className="choiceBtn"; btn.textContent=c;
+    btn.onclick=()=> handleChoice(btn,question);
     container.appendChild(btn);
   });
 }
@@ -333,26 +342,23 @@ function showMeaningPanel(question){
 function handleChoice(btn, question){
   if(question.revealed) return;
   if(btn.textContent===question.word){
-    btn.classList.add("correct");
-    scores[selectedTeam]+=10;
+    btn.classList.add("correct"); scores[selectedTeam]+=10;
     document.getElementById("feedback").textContent="✅ Correct! +10 points";
     document.getElementById("correctSound").play();
-    confetti({particleCount: 50, spread: 60, origin:{y:0.6}});
+    confetti({particleCount:50,spread:60,origin:{y:0.6}});
   } else {
     btn.classList.add("wrong");
-    document.getElementById("feedback").textContent=`❌ Wrong! The word was: ${question.word}`;
+    document.getElementById("feedback").textContent="❌ Wrong! The word was: "+question.word;
     document.getElementById("wrongSound").play();
   }
   question.revealed=true;
   renderTeams();
-
-  // Remove box highlight
   document.querySelectorAll(".numberBox")[currentQuestion].classList.add("revealed");
+  document.querySelector(".card-inner").classList.add("flipped");
 
-  // Check for final winner
   if(questions.every(q=>q.revealed)){
-    document.getElementById("feedback").textContent += " 🎉 All questions answered! 🎉";
-    confetti({particleCount: 300, spread: 150, origin:{y:0.6}});
+    document.getElementById("feedback").textContent+=" 🎉 All questions answered! 🎉";
+    confetti({particleCount:300,spread:150,origin:{y:0.6}});
   }
 }
 
@@ -361,6 +367,5 @@ function restartGame(){ window.location.reload(); }
 // Initialize 5 question boxes
 for(let i=0;i<5;i++) addQuestion();
 </script>
-
 </body>
 </html>
