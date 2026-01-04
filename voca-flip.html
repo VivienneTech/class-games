@@ -2,266 +2,267 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaFlip: Classroom Edition</title>
+<title>VocaFlip: Classroom Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
+body {
   margin:0;
-  font-family:"Comic Sans MS", system-ui;
-  background: linear-gradient(#fff7e6,#ffe0b2);
+  font-family: system-ui;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  background:#f5f7fa;
+}
+h1 {
+  color:#c4161c;
+  font-size:3rem;
   text-align:center;
+  margin:0.5rem;
 }
-h1{color:#c4161c;font-size:3rem;margin:0.2rem;}
-h3{color:#fb8c00;margin-top:0;}
-.main{max-width:1600px;margin:auto;padding:1rem;}
-#rules{
-  background:#fff3e0;padding:1rem;border-radius:15px;box-shadow:0 4px 6px rgba(0,0,0,0.1);
-  font-size:1.2rem;margin-bottom:1rem;text-align:left;
+h2 { font-size:2rem; text-align:center; margin:0.5rem; }
+.main { width:100%; max-width:1600px; display:flex; flex-direction:column; align-items:center; gap:1rem; }
+#rulesPanel {
+  background:#fff;
+  border-radius:12px;
+  padding:1rem 2rem;
+  width:90%;
+  font-size:1.3rem;
 }
-.flex-container{display:flex;gap:1rem;flex-wrap:nowrap; justify-content:center;}
-#wordsSection{flex:3; background:#fff3e0;padding:1rem;border-radius:15px;box-shadow:0 4px 6px rgba(0,0,0,0.1); max-width:900px;}
-#wordsGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
-#wordsGrid input{font-size:1.3rem;padding:0.8rem;text-align:center;width:100%;}
-#teamSection{flex:1; background:#fff3e0;padding:1rem;border-radius:15px;box-shadow:0 4px 6px rgba(0,0,0,0.1);}
-.team{font-size:1.5rem;margin:0.3rem;padding:0.8rem;border-radius:12px;cursor:pointer;background:#ffd54f;display:flex;align-items:center;justify-content:center;gap:0.5rem;}
-.team.current{background:#ff7043;color:white;font-weight:bold;}
-#scoreboard{margin:1rem;font-size:1.5rem;}
-#cards{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;width:90%;margin:auto;margin-top:1rem;}
-.card{height:120px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.5rem;border-radius:12px;color:white;cursor:pointer;}
-.card.selected{background:#66bb6a;}
-#choices{margin-top:1rem;}
-.choice{display:block;width:100%;font-size:2rem;margin:0.3rem 0;padding:1rem;border-radius:12px;background:#ffd54f;color:#000;cursor:pointer;}
-.choice:hover{background:#ffb300;}
-#feedback{font-size:1.8rem;margin:1rem;min-height:40px;}
-#winnerScreen{display:none;font-size:3rem;color:#2e7d32;margin-top:1rem;position:relative;z-index:10;}
-canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:5;}
+#teamSetup {
+  display:flex; gap:2rem; width:90%; justify-content:space-between; margin-top:1rem;
+}
+#teamsArea {
+  flex:1;
+  display:flex; flex-direction:column; gap:0.5rem;
+}
+.teamInput {
+  font-size:1.2rem; padding:0.5rem; width:150px;
+}
+.teamBtn {
+  font-size:2rem; padding:1rem; cursor:pointer; border:none; border-radius:12px; margin-top:0.5rem;
+}
+#wordsArea {
+  flex:3;
+  display:grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap:0.5rem;
+}
+.wordBox {
+  font-size:1.2rem; padding:1rem; text-align:center; border-radius:8px; border:2px solid #003a8f; background:white; cursor:pointer; min-height:60px;
+}
+button { font-size:1.3rem; padding:0.8rem 1.2rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer; margin-top:0.5rem;}
+button:hover { background:#c4161c; }
+#numberPanel {
+  display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem; margin-top:1rem;
+}
+.numberBox {
+  width:60px; height:60px; display:flex; justify-content:center; align-items:center; background:#c4161c; color:white; font-size:1.5rem; border-radius:12px; cursor:pointer;
+}
+.numberBox.used { background:#003a8f; cursor:default; }
+#questionPanel { display:none; flex-direction:column; align-items:center; gap:1rem; width:80%; margin-top:1rem; }
+#meaningBox { font-size:2rem; background:#fff; padding:1.5rem 2rem; border-radius:12px; text-align:center; min-height:80px; width:100%; }
+#choices { display:flex; flex-direction:column; gap:1rem; width:100%; }
+.choiceBtn {
+  font-size:1.5rem; padding:1rem; border:none; border-radius:12px; background:#003a8f; color:white; cursor:pointer; width:100%;
+}
+.choiceBtn:hover { background:#c4161c; }
+#feedback { font-size:1.8rem; min-height:40px; margin-top:1rem; text-align:center; }
+#scoreboard { display:flex; gap:1rem; margin-top:1rem; font-size:1.5rem; flex-wrap:wrap; justify-content:center; }
+.teamScore { padding:0.5rem 1rem; border-radius:12px; background:#ddd; cursor:pointer; }
+.teamScore.current { background:#003a8f; color:white; font-weight:700; }
+canvas { position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
 </style>
 </head>
 <body>
 
 <h1>🌸 VocaFlip 🌸</h1>
-<h3>VUS Hoa Binh Campus</h3>
+<h2>VUS Hoa Binh Campus</h2>
 
-<div id="rules">
+<div class="main">
+
+<div id="rulesPanel">
 <strong>Rules:</strong>
 <ol>
-<li>Select a team from the scoreboard.</li>
-<li>Choose a word card (students can use sticky balls or pointers).</li>
-<li>Choose the correct answer from the options.</li>
-<li>Correct = +10 points, Wrong = 0 points.</li>
-<li>Teams take turns until all cards are answered.</li>
-<li>The team with the highest score wins!</li>
+<li>Choose your team and emoji on the scoreboard.</li>
+<li>Pick a number from the numbered boxes panel to select a question.</li>
+<li>The big panel shows the meaning. Think carefully!</li>
+<li>Choose the correct word from the 3 answer options.</li>
+<li>The teacher clicks your choice to confirm.</li>
+<li>✅ Correct → +10 points, short confetti. ❌ Wrong → 0 points, correct word shown briefly.</li>
+<li>Next turn rotates to another team. Repeat until all numbers are used.</li>
+<li>The team with the highest score wins! 🎉 Winner gets long confetti celebration.</li>
 </ol>
 </div>
 
-<div class="main">
-<div class="flex-container">
-  <div id="teamSection">
-    <h2>Teams 🍎</h2>
-    <div id="teamSetup"></div>
-    <button onclick="addTeam()">➕ Add Team</button>
+<div id="teamSetup">
+  <div id="teamsArea">
+    <input class="teamInput" placeholder="Team 1" id="team1">
+    <input class="teamInput" placeholder="Team 2" id="team2">
+    <input class="teamInput" placeholder="Team 3" id="team3">
     <div id="scoreboard"></div>
   </div>
-
-  <div id="wordsSection">
-    <h2>Enter Words</h2>
-    <div id="wordsGrid"></div>
-    <button onclick="addWordBox()">➕ Add Word</button>
-  </div>
+  <div id="wordsArea"></div>
 </div>
 
-<button onclick="startGame()">▶ Start Game</button>
+<button onclick="startGame()">Start Game</button>
 
-<div id="cards"></div>
-<div id="choices"></div>
+<div id="numberPanel"></div>
+<div id="questionPanel">
+  <div id="meaningBox"></div>
+  <div id="choices"></div>
+</div>
+
 <div id="feedback"></div>
-<div id="winnerScreen"></div>
-</div>
+<button onclick="restartGame()">Restart</button>
 
 <canvas id="confetti"></canvas>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-let cards=[], teams=[], scores=[], selectedTeam=null;
-let currentAnswerIndex=null;
-let currentCard=null;
-let particles=[];
-const fruitsVeggies=["🍎","🍓","🍇","🍉","🍒","🍍","🥝","🌽","🥦","🥭"];
+let words = []; // {meaning, word}
+let numberBoxes = [];
+let teams = [];
+let scores = [];
+let selectedTeam = null;
+let currentQuestionIndex = null;
 
-// ----------------- TEAMS -----------------
-function addTeam(name="Team"){
-  const div=document.createElement("div");
-  div.style.display="flex";div.style.alignItems="center";div.style.marginBottom="5px";
-  div.innerHTML=`
-    <select>${fruitsVeggies.map(e=>`<option>${e}</option>`).join("")}</select>
-    <input placeholder="Team name" value="${name}">
-  `;
-  document.getElementById("teamSetup").appendChild(div);
-}
-addTeam("Team 1"); addTeam("Team 2");
+// Example prefilled words (superlative adjectives)
+words = [
+  {meaning:"Having the greatest height", word:"tallest"},
+  {meaning:"Most bright or shining", word:"brightest"},
+  {meaning:"Most beautiful", word:"prettiest"},
+  {meaning:"Most fast", word:"fastest"},
+  {meaning:"Most big", word:"biggest"},
+  {meaning:"Most small", word:"smallest"},
+  {meaning:"Most strong", word:"strongest"},
+  {meaning:"Most smart", word:"smartest"},
+  {meaning:"Most long", word:"longest"},
+  {meaning:"Most hot", word:"hottest"},
+  {meaning:"Most cold", word:"coldest"},
+  {meaning:"Most heavy", word:"heaviest"},
+  {meaning:"Most light", word:"lightest"},
+  {meaning:"Most kind", word:"kindest"},
+  {meaning:"Most rich", word:"richest"},
+  {meaning:"Most poor", word:"poorest"},
+  {meaning:"Most loud", word:"loudest"},
+  {meaning:"Most quiet", word:"quietest"},
+  {meaning:"Most early", word:"earliest"},
+  {meaning:"Most late", word:"latest"},
+  {meaning:"Most easy", word:"easiest"},
+  {meaning:"Most hard", word:"hardest"},
+  {meaning:"Most funny", word:"funniest"},
+  {meaning:"Most interesting", word:"most interesting"},
+  {meaning:"Most simple", word:"simplest"}
+];
 
-// ----------------- WORDS -----------------
-function addWordBox(value=""){
-  const grid=document.getElementById("wordsGrid");
-  if(grid.children.length>=25) return;
-  const input=document.createElement("input");
-  input.type="text";
-  input.placeholder=grid.children.length+1;
-  input.value=value;
-  input.addEventListener('input',()=>{input.value=input.value.toLowerCase()});
-  grid.appendChild(input);
-}
-for(let i=0;i<15;i++){addWordBox();}
+const emojis = ["🍎","🍓","🍇","🍉","🍒","🍍","🥦","🌽","🥭","🌸"];
 
-// ----------------- GAME LOGIC -----------------
-function shuffleWord(word){return word.split('').sort(()=>Math.random()-0.5).join('');}
-
-function startGame(){
-  cards=Array.from(document.querySelectorAll("#wordsGrid input"))
-         .map(i=>i.value.trim())
-         .filter(w=>w!=="")
-         .slice(0,25)
-         .map(w=>({word:w, revealed:false}));
-  if(cards.length===0) return alert("Add at least 1 word!");
-
-  // Shuffle cards
-  for(let i=cards.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [cards[i], cards[j]]=[cards[j], cards[i]];
-  }
-
-  teams=[]; scores=[];
-  document.querySelectorAll("#teamSetup div").forEach(r=>{
-    const emoji=r.children[0].value;
-    const name=r.children[1].value||"Team";
-    teams.push(`${emoji} ${name}`);
-    scores.push(0);
-  });
-  selectedTeam=null;
-  renderScoreboard();
-  renderCards();
+function startGame() {
+  // Teams
+  teams = [
+    document.getElementById("team1").value||"Team 1",
+    document.getElementById("team2").value||"Team 2",
+    document.getElementById("team3").value||"Team 3"
+  ].filter(t=>t!=="");
+  scores = teams.map(_=>0);
+  selectedTeam = null;
+  renderTeams();
+  renderNumberPanel();
   document.getElementById("feedback").textContent="";
-  document.getElementById("winnerScreen").style.display="none";
 }
 
-// ----------------- SCOREBOARD -----------------
-function renderScoreboard(){
-  const div=document.getElementById("scoreboard");
-  div.innerHTML="";
+function renderTeams() {
+  const sb = document.getElementById("scoreboard");
+  sb.innerHTML = "";
   teams.forEach((t,i)=>{
-    const d=document.createElement("div");
-    d.className="team"+(i===selectedTeam?" current":"");
-    d.textContent=`${t}: ${scores[i]}`;
-    d.onclick=()=>{selectedTeam=i; renderScoreboard();}
-    div.appendChild(d);
+    const d = document.createElement("div");
+    d.className="teamScore" + (i===selectedTeam?" current":"");
+    d.textContent=`${emojis[i%emojis.length]} ${t}: ${scores[i]} pts`;
+    d.onclick=()=>{ selectedTeam=i; renderTeams(); }
+    sb.appendChild(d);
   });
 }
 
-// ----------------- CARDS -----------------
-function renderCards(){
-  const div=document.getElementById("cards");
-  div.innerHTML="";
-  cards.forEach((c,i)=>{
-    const card=document.createElement("div");
-    card.className="card";
-    card.textContent=c.word;
-    card.style.background="#c4161c";
-    card.onclick=()=>{
-      if(c.revealed) return;
-      if(selectedTeam===null) return alert("Select a team!");
-      document.querySelectorAll(".card").forEach(card2=>card2.classList.remove("selected"));
-      card.classList.add("selected");
-      c.revealed=true;
-      currentCard=card; currentAnswerIndex=i;
-      showChoices();
-    };
-    div.appendChild(card);
+function renderNumberPanel() {
+  const np = document.getElementById("numberPanel");
+  np.innerHTML="";
+  words.forEach((w,i)=>{
+    const box = document.createElement("div");
+    box.className="numberBox";
+    box.textContent=i+1;
+    if(w.used) box.classList.add("used");
+    box.onclick=()=>{ if(!w.used && selectedTeam!==null) chooseQuestion(i); }
+    np.appendChild(box);
   });
 }
 
-// ----------------- CHOICES -----------------
-function showChoices(){
-  const div=document.getElementById("choices");
-  div.innerHTML="<h2>Choose the correct answer</h2>";
-  let options=[cards[currentAnswerIndex].word];
+function chooseQuestion(index) {
+  currentQuestionIndex=index;
+  const q = words[index];
+  q.used=true;
+  document.getElementById("numberPanel").style.display="none";
+  const qp = document.getElementById("questionPanel");
+  qp.style.display="flex";
+  document.getElementById("meaningBox").textContent=q.meaning;
+  const choicesDiv = document.getElementById("choices");
+  choicesDiv.innerHTML="";
+  // create 3 choices, 1 correct + 2 random
+  const correct = q.word;
+  const options = [correct];
   while(options.length<3){
-    const r=cards[Math.floor(Math.random()*cards.length)].word;
+    const r = words[Math.floor(Math.random()*words.length)].word;
     if(!options.includes(r)) options.push(r);
   }
+  // shuffle
   options.sort(()=>Math.random()-0.5);
-  options.forEach(o=>{
-    const b=document.createElement("button");
-    b.className="choice";
-    b.textContent=o;
-    b.onclick=()=>checkAnswer(o);
-    div.appendChild(b);
+  options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className="choiceBtn";
+    btn.textContent=opt;
+    btn.onclick=()=>checkAnswer(opt===correct, btn);
+    choicesDiv.appendChild(btn);
   });
 }
 
-function checkAnswer(choice){
-  currentCard.style.background="#42a5f5";
-  document.getElementById("choices").innerHTML="";
-  if(choice===cards[currentAnswerIndex].word){
+function checkAnswer(isCorrect, btn) {
+  const q = words[currentQuestionIndex];
+  if(isCorrect){
     scores[selectedTeam]+=10;
-    document.getElementById("feedback").textContent="✅ Correct! +10";
-    launchConfetti(200,1000);
-  } else{
-    document.getElementById("feedback").textContent=`❌ Wrong! The word was "${cards[currentAnswerIndex].word}"`;
+    document.getElementById("feedback").textContent="✅ Correct! +10 points";
+    launchConfetti(100); // short confetti
+  } else {
+    document.getElementById("feedback").textContent=`❌ Wrong! Correct answer: ${q.word}`;
   }
-  renderScoreboard();
-  checkWin();
+  renderTeams();
+  // Reset panel after 1.5 sec
+  setTimeout(()=>{
+    document.getElementById("questionPanel").style.display="none";
+    document.getElementById("numberPanel").style.display="flex";
+    renderNumberPanel();
+    checkEndGame();
+  },1500);
 }
 
-// ----------------- WINNER -----------------
-function checkWin(){
-  const allRevealed=cards.every(c=>c.revealed);
-  if(allRevealed){
-    const max=Math.max(...scores);
-    const winner=teams[scores.indexOf(max)];
-    document.getElementById("winnerScreen").style.display="block";
-    document.getElementById("winnerScreen").textContent=`🏆 WINNER: ${winner} 🏆`;
-    launchConfetti(500,300000); // 5 minutes
+function checkEndGame() {
+  if(words.every(w=>w.used)){
+    const maxScore=Math.max(...scores);
+    const winners = teams.filter((t,i)=>scores[i]===maxScore);
+    document.getElementById("feedback").textContent=`🎉 Winner: ${winners.join(", ")}!`;
+    launchConfetti(5000); // long confetti for winner
   }
 }
 
-// ----------------- CONFETTI -----------------
-const canvas=document.getElementById("confetti");
-const ctx=canvas.getContext("2d");
-function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
-window.addEventListener("resize",resizeCanvas);resizeCanvas();
+function restartGame(){window.location.reload();}
 
-function launchConfetti(count=100,duration=1000){
-  for(let i=0;i<count;i++){
-    particles.push({
-      x: Math.random()*canvas.width,
-      y: Math.random()*50,
-      r: Math.random()*6+4,
-      d: Math.random()*10+5,
-      color:`hsl(${Math.random()*360},100%,50%)`,
-      tilt: Math.random()*10-10,
-      tiltAngle:0,
-      tiltAngleIncrement:Math.random()*0.07+0.05
-    });
-  }
-  if(duration>0) setTimeout(()=>{particles=[]},duration);
+function launchConfetti(duration=1000){
+  const end = Date.now() + duration;
+  const canvas = document.getElementById("confetti");
+  (function frame(){
+    confetti({particleCount:5, spread:60, origin:{y:0.6}, zIndex:9999});
+    if(Date.now()<end) requestAnimationFrame(frame);
+  }());
 }
-
-function drawConfetti(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p=>{
-    ctx.beginPath();
-    ctx.lineWidth=p.r/2;
-    ctx.strokeStyle=p.color;
-    ctx.moveTo(p.x+p.tilt+p.r/4,p.y);
-    ctx.lineTo(p.x+p.tilt,p.y+p.tilt+p.r/2);
-    ctx.stroke();
-    p.tiltAngle+=p.tiltAngleIncrement;
-    p.y += (Math.cos(p.d)+1+ p.r/2)/2;
-    p.x += Math.sin(p.tiltAngle)*2;
-    if(p.y>canvas.height)p.y=-10;
-  });
-  requestAnimationFrame(drawConfetti);
-}
-drawConfetti();
 </script>
 
 </body>
