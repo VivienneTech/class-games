@@ -7,13 +7,13 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
 
-body {
+body{
   margin:0;
-  font-family: 'Comic Neue', cursive;
-  background: #f5f7fa;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  font-family:'Comic Neue', cursive;
+  background:linear-gradient(to bottom,#fdfbfb,#ebedee);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 h1{
   color:#c4161c;
@@ -29,110 +29,115 @@ h2{
 }
 .main{
   width:100%;
-  max-width:1400px;
+  max-width:1600px;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:1rem;
 }
+
+/* RULES */
 #rules{
   background:#fff;
   padding:1rem;
-  border-radius:10px;
+  border-radius:12px;
   font-size:1.2rem;
   width:90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
+
+/* TEACHER PANEL */
 #teacherPanel{
   display:flex;
   flex-direction:column;
   gap:0.5rem;
   width:90%;
-  max-height:400px;
+  max-height:500px;
   overflow-y:auto;
   border:2px solid #003a8f;
   padding:0.5rem;
   border-radius:12px;
   background:#fff;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 .wordRow{
   display:flex;
   gap:0.5rem;
+  justify-content:center;
 }
 .wordRow input{
-  font-size:1.1rem;
-  padding:0.5rem;
-  border-radius:8px;
-  border:1px solid #ccc;
+  font-size:1.2rem;
+  padding:0.7rem;
+  border-radius:10px;
+  border:2px solid #ccc;
 }
-.wordInput{width:120px;}
-.meaningInput{width:300px;}
+.wordInput{width:150px; background:#fff0f5;}
+.meaningInput{width:400px; background:#f0fff0;}
+
+/* BUTTONS */
 button{
   font-size:1.2rem;
-  padding:0.6rem 1rem;
+  padding:0.7rem 1.2rem;
   border:none;
-  border-radius:8px;
-  background:#003a8f;
+  border-radius:12px;
+  background:linear-gradient(45deg,#003a8f,#00aaff);
   color:white;
   cursor:pointer;
   margin-top:0.5rem;
+  transition: transform 0.2s;
 }
-button:hover{background:#c4161c;}
+button:hover{transform:scale(1.05); background:linear-gradient(45deg,#00aaff,#003a8f);}
+
+/* TEAMS */
 #teams{
   display:flex;
   gap:1rem;
-  margin-top:1rem;
-  font-size:1.4rem;
   flex-wrap:wrap;
+  justify-content:center;
 }
 .team{
-  padding:0.5rem 1rem;
-  border-radius:12px;
-  background:#ddd;
+  padding:0.7rem 1.5rem;
+  border-radius:15px;
   cursor:pointer;
   font-size:1.5rem;
+  font-weight:bold;
+  color:white;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.5);
   transition: transform 0.3s;
 }
-.team.current{
-  background:#003a8f;
-  color:white;
-  font-weight:700;
-  transform: scale(1.1);
-}
+.team:hover{transform:scale(1.1);}
+.team.current{box-shadow:0 0 20px rgba(0,0,0,0.5);}
+
+/* NUMBERED BOXES */
 #numberedBoxes{
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(70px,1fr));
+  grid-template-columns: repeat(auto-fit,minmax(70px,1fr));
   gap:0.5rem;
   width:90%;
   margin-top:1rem;
 }
 .numberBox{
-  background:linear-gradient(45deg,#ff7eb3,#ff758c);
-  color:white;
-  font-size:1.5rem;
+  font-size:1.6rem;
   font-weight:bold;
-  border-radius:12px;
-  padding:1rem;
   text-align:center;
+  padding:1rem;
+  border-radius:12px;
   cursor:pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  color:white;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.5);
 }
-.numberBox.selected{
-  background:green;
-  transform: scale(1.1);
-}
-.numberBox.revealed{
-  background:#6c757d;
-  cursor:default;
-}
-.numberBox:hover{
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
-}
+.numberBox:hover{transform:scale(1.1); box-shadow:0 0 15px rgba(0,0,0,0.3);}
+.numberBox.selected{transform:scale(1.2);}
+.numberBox.revealed{opacity:0.6; cursor:default; transform:none;}
+
+/* MEANING PANEL */
 #meaningPanel{
-  margin-top:1rem;
   display:none;
   flex-direction:column;
   align-items:center;
-  gap:0.5rem;
+  gap:1rem;
+  margin-top:1rem;
 }
 .card{
   perspective:1000px;
@@ -142,45 +147,45 @@ button:hover{background:#c4161c;}
   transition: transform 0.6s;
   transform-style: preserve-3d;
 }
-.card.flipped .card-inner{
-  transform: rotateY(180deg);
-}
+.card.flipped .card-inner{transform: rotateY(180deg);}
 .card-front, .card-back{
-  padding:0.7rem 1rem;
-  border-radius:12px;
-  font-size:1.5rem;
+  padding:1rem 1.5rem;
+  border-radius:15px;
+  font-size:1.6rem;
+  min-width:300px;
   text-align:center;
-  min-width:200px;
   backface-visibility:hidden;
   color:white;
   font-weight:bold;
+  box-shadow:0 5px 15px rgba(0,0,0,0.3);
 }
-.card-front{
-  background:#003a8f;
-}
-.card-back{
-  background:#28a745;
-  transform:rotateY(180deg);
-}
+.card-front{background:linear-gradient(45deg,#ff7eb3,#ff758c);}
+.card-back{background:linear-gradient(45deg,#28a745,#218838); transform:rotateY(180deg);}
+
+/* CHOICES */
+#choicesContainer{display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;}
 .choiceBtn{
-  padding:0.7rem 1rem;
+  padding:0.7rem 1.5rem;
+  font-size:1.5rem;
   border:none;
   border-radius:12px;
-  font-size:1.4rem;
   cursor:pointer;
-  transition: transform 0.2s;
-  margin:0.2rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  background:linear-gradient(45deg,#ffcc70,#ff6f91);
+  color:white;
+  font-weight:bold;
 }
-.choiceBtn:hover{
-  transform: scale(1.05);
-}
+.choiceBtn:hover{transform:scale(1.05); box-shadow:0 0 15px rgba(0,0,0,0.3);}
 .correct{background:#28a745; color:white;}
 .wrong{background:#dc3545; color:white;}
+
+/* FEEDBACK */
 #feedback{
   margin-top:1rem;
-  font-size:1.4rem;
-  min-height:30px;
+  font-size:1.5rem;
+  min-height:40px;
   text-align:center;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -194,11 +199,11 @@ button:hover{background:#c4161c;}
 <div id="rules">
 <strong>Rules:</strong>
 <ol>
-<li>Teacher enters words and meanings in the panel below (Word Box then Meaning Box).</li>
+<li>Teacher enters Word & Meaning in the panel below.</li>
 <li>Students choose a numbered box.</li>
 <li>The meaning appears with 3 answer choices.</li>
-<li>Students pick the correct answer. Teacher clicks to reveal correctness.</li>
-<li>Correct = +10 points, wrong = 0 points.</li>
+<li>Students pick the correct answer. Teacher clicks it to reveal correctness.</li>
+<li>Correct = +10 points. Wrong = 0 points.</li>
 <li>Teams take turns selecting boxes until all are answered.</li>
 </ol>
 </div>
@@ -221,12 +226,12 @@ button:hover{background:#c4161c;}
 
 <div id="meaningPanel">
 <div id="meaningText" class="card">
-  <div class="card-inner">
-    <div class="card-front"></div>
-    <div class="card-back"></div>
-  </div>
+<div class="card-inner">
+<div class="card-front"></div>
+<div class="card-back"></div>
 </div>
-<div id="choicesContainer" style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;"></div>
+</div>
+<div id="choicesContainer"></div>
 </div>
 
 <div id="feedback"></div>
@@ -234,24 +239,23 @@ button:hover{background:#c4161c;}
 
 </div>
 
-<!-- Sounds -->
 <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
 <audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
-
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
 <script>
 let questions=[], teams=[], scores=[], selectedTeam=null;
 let currentQuestion=null;
 
+// Colors for rainbow numbered boxes
+const rainbowColors=['#ff4d4d','#ff9933','#ffff66','#66ff66','#66ffff','#6699ff','#cc66ff','#ff66cc'];
+
 function addQuestion(){
   const panel=document.getElementById("teacherPanel");
   const row=document.createElement("div");
   row.className="wordRow";
-  const wordInput=document.createElement("input");
-  wordInput.type="text"; wordInput.placeholder="Word"; wordInput.className="wordInput";
-  const meaningInput=document.createElement("input");
-  meaningInput.type="text"; meaningInput.placeholder="Meaning"; meaningInput.className="meaningInput";
+  const wordInput=document.createElement("input"); wordInput.type="text"; wordInput.placeholder="Word"; wordInput.className="wordInput";
+  const meaningInput=document.createElement("input"); meaningInput.type="text"; meaningInput.placeholder="Meaning"; meaningInput.className="meaningInput";
   row.appendChild(wordInput); row.appendChild(meaningInput);
   panel.appendChild(row);
 }
@@ -265,45 +269,46 @@ function startGame(){
     const meaning=r.querySelector(".meaningInput").value.trim();
     if(word && meaning) questions.push({word,meaning,revealed:false});
   });
-  if(questions.length===0) return alert("Enter at least one word and meaning!");
+  if(questions.length===0) return alert("Enter at least one word & meaning!");
+  if(questions.length>25) questions=questions.slice(0,25);
 
-  // Shuffle questions
+  // Shuffle
   for(let i=questions.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
     [questions[i],questions[j]]=[questions[j],questions[i]];
   }
 
   // Teams
-  teams=[
-    document.getElementById("team1").value||"Team 1",
-    document.getElementById("team2").value||"Team 2",
-    document.getElementById("team3").value||"Team 3",
-    document.getElementById("team4").value||"Team 4"
-  ].filter(t=>t!=="");
+  teams=[];
+  for(let i=1;i<=10;i++){
+    const tInput=document.getElementById('team'+i);
+    if(tInput && tInput.value) teams.push(tInput.value);
+  }
+  if(teams.length===0) teams=['🍎 Team 1','🍓 Team 2'];
   scores=teams.map(_=>0); selectedTeam=null;
 
   renderTeams(); renderNumberedBoxes();
-  panel.style.display="none"; document.getElementById("teamInputs").style.display="none";
+  panel.style.display="none";
+  document.getElementById("teamInputs").style.display="none";
 }
 
 function renderTeams(){
-  const div=document.getElementById("teams");
-  div.innerHTML="";
+  const div=document.getElementById("teams"); div.innerHTML="";
+  const colors=['#ff6666','#ffcc66','#66ff66','#66ccff','#cc66ff','#ff66cc','#ff9966','#66ffcc'];
   teams.forEach((t,i)=>{
-    const d=document.createElement("div");
-    d.className="team"+(i===selectedTeam?" current":"");
-    d.textContent=t + ": "+scores[i]+" pts";
-    d.onclick=()=>{ selectedTeam=i; renderTeams(); };
+    const d=document.createElement("div"); d.className="team"; d.style.background=colors[i%colors.length];
+    d.textContent=t; if(i===selectedTeam) d.classList.add("current");
+    d.onclick=()=>{selectedTeam=i; renderTeams();};
     div.appendChild(d);
   });
 }
 
 function renderNumberedBoxes(){
-  const div=document.getElementById("numberedBoxes");
-  div.innerHTML="";
+  const div=document.getElementById("numberedBoxes"); div.innerHTML="";
   questions.forEach((q,i)=>{
-    const box=document.createElement("div");
-    box.className="numberBox"; box.textContent=i+1;
+    const box=document.createElement("div"); box.className="numberBox";
+    box.textContent=i+1;
+    box.style.background=rainbowColors[i%rainbowColors.length];
     box.onclick=()=> selectQuestion(i,box);
     div.appendChild(box);
   });
@@ -322,8 +327,7 @@ function showMeaningPanel(question){
   const panel=document.getElementById("meaningPanel"); panel.style.display="flex";
   const front=document.querySelector(".card-front");
   const back=document.querySelector(".card-back");
-  front.textContent=question.meaning;
-  back.textContent=question.word;
+  front.textContent=question.meaning; back.textContent=question.word;
   document.querySelector(".card-inner").classList.remove("flipped");
 
   const container=document.getElementById("choicesContainer"); container.innerHTML="";
@@ -362,9 +366,9 @@ function handleChoice(btn, question){
   }
 }
 
-function restartGame(){ window.location.reload(); }
+function restartGame(){window.location.reload();}
 
-// Initialize 5 question boxes
+// Initialize 5 question rows
 for(let i=0;i<5;i++) addQuestion();
 </script>
 </body>
