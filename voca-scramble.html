@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaScramble 🍎 Kids Edition</title>
+<title>VocaScramble 🌸 Kids Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -12,20 +12,60 @@ body{
   background: linear-gradient(#fff7e6,#ffe0b2);
   text-align:center;
 }
-h1{color:#e53935;font-size:3rem;margin:1rem;}
-h2{color:#fb8c00;}
 
-.main{max-width:1400px;margin:auto;padding:1rem;}
+h1{
+  color:#e53935;
+  font-size:3rem;
+  margin:0.5rem;
+}
+h3{
+  color:#fb8c00;
+  margin-top:0px;
+}
 
-textarea{
-  width:90%;max-width:600px;height:120px;
-  font-size:1.2rem;padding:0.5rem;
+.main{
+  max-width:1400px;
+  margin:auto;
+  padding:1rem;
+}
+
+#rules{
+  background:#fff3e0;
+  padding:1rem;
+  border-radius:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,0.1);
+  font-size:1.2rem;
+  margin-bottom:1rem;
+  text-align:left;
+}
+
+#teamSection, #wordsSection{
+  padding:1rem;
+  border-radius:15px;
+  background:#fff3e0;
+  box-shadow:0 4px 6px rgba(0,0,0,0.1);
+}
+
+#teamSetup, #wordsInputBoxes{
+  margin-top:0.5rem;
+}
+
+.teamRow, .wordRow{
+  display:flex;
+  gap:0.5rem;
+  margin-bottom:0.5rem;
+  justify-content:center;
+}
+
+.teamRow input, .wordRow input, select{
+  font-size:1.1rem;
+  padding:0.3rem;
 }
 
 button{
-  font-size:1.3rem;
-  padding:0.6rem 1rem;
-  margin:0.4rem;
+  font-size:1.2rem;
+  padding:0.5rem 1rem;
+  margin:0.3rem;
   border:none;
   border-radius:12px;
   cursor:pointer;
@@ -33,18 +73,6 @@ button{
   color:white;
 }
 button:hover{background:#2e7d32;}
-
-#teamSetup{margin:1rem;}
-.teamRow{
-  display:flex;
-  justify-content:center;
-  gap:0.5rem;
-  margin-bottom:0.5rem;
-}
-.teamRow input, select{
-  font-size:1.1rem;
-  padding:0.3rem;
-}
 
 #scoreboard{
   display:flex;
@@ -58,7 +86,7 @@ button:hover{background:#2e7d32;}
   padding:0.6rem 1rem;
   border-radius:15px;
   background:#fff;
-  border:3px solid #ffcc80;
+  border:3px solid #ffb74d;
   cursor:pointer;
 }
 .team.current{
@@ -108,34 +136,78 @@ button:hover{background:#2e7d32;}
   display:none;
   font-size:3rem;
   color:#2e7d32;
+  margin-top:1rem;
+}
+
+.flex-container{
+  display:flex;
+  gap:2rem;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+/* CONFETTI */
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  pointer-events:none;
+  z-index:9999;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🍓 VocaScramble 🍌</h1>
+<h1>🌸 VocaScramble 🌸</h1>
+<h3>VUS Hoa Binh Campus</h3>
+
+<div id="rules">
+<strong>Rules:</strong>
+<ol>
+<li>Click a team on the scoreboard to select them.</li>
+<li>Click a scrambled word card.</li>
+<li>Choose the correct answer from the options that appear.</li>
+<li>Correct = +10 points, Wrong = 0 points.</li>
+<li>Teams take turns until all cards are answered.</li>
+<li>The team with the highest score wins!</li>
+</ol>
+</div>
 
 <div class="main">
 
-<h2>Enter Words (max 25)</h2>
-<textarea id="wordsInput" placeholder="biggest\nfastest\nhappiest"></textarea>
+  <div class="flex-container">
+    <!-- Teams Section -->
+    <div id="teamSection">
+      <h2>Teams 🌸</h2>
+      <div id="teamSetup"></div>
+      <button onclick="addTeam()">➕ Add Team</button>
+    </div>
 
-<h2>Teams 🍎</h2>
-<div id="teamSetup"></div>
-<button onclick="addTeam()">➕ Add Team</button>
+    <!-- Words Section -->
+    <div id="wordsSection">
+      <h2>Enter Words (one per box)</h2>
+      <div id="wordsInputBoxes">
+        <input type="text" placeholder="Example: biggest" value="biggest"><br>
+        <input type="text" placeholder="Example: fastest" value="fastest"><br>
+        <input type="text" placeholder="Example: happiest" value="happiest"><br>
+      </div>
+      <button onclick="addWordBox()">➕ Add Word</button>
+    </div>
+  </div>
 
-<br>
-<button onclick="startGame()">▶ Start Game</button>
+  <br>
+  <button onclick="startGame()">▶ Start Game</button>
 
-<div id="scoreboard"></div>
-<div id="cards"></div>
-<div id="choices"></div>
-<div id="feedback"></div>
-
-<div id="winnerScreen"></div>
+  <div id="scoreboard"></div>
+  <div id="cards"></div>
+  <div id="choices"></div>
+  <div id="feedback"></div>
+  <div id="winnerScreen"></div>
 
 </div>
+
+<canvas id="confetti"></canvas>
 
 <!-- 🔊 Sounds -->
 <audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
@@ -146,42 +218,67 @@ button:hover{background:#2e7d32;}
 let correct=[], scrambled=[];
 let teams=[], scores=[], selectedTeam=null;
 let currentAnswerIndex=null;
+let currentCard=null;
 
-const fruits=["🍎","🍌","🍇","🍉","🍓","🍍","🥭","🍒"];
+// Flower emoji teams
+const fruitsVeggies = ["🌸","🌼","🌹","🌻","🥀","🍎","🍇","🍉","🥦","🥕"];
 
+// ---------------- TEAM SETUP ----------------
 function addTeam(){
   const div=document.createElement("div");
   div.className="teamRow";
   div.innerHTML=`
-    <select>${fruits.map(f=>`<option>${f}</option>`).join("")}</select>
+    <select>${fruitsVeggies.map(e=>`<option>${e}</option>`).join("")}</select>
     <input placeholder="Team name">
   `;
   document.getElementById("teamSetup").appendChild(div);
 }
+// Add 2 initial teams
 addTeam(); addTeam();
 
+// ---------------- WORD BOX SETUP ----------------
+function addWordBox(value=""){
+  const div = document.getElementById("wordsInputBoxes");
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Enter word";
+  input.value = value;
+  div.appendChild(input);
+  div.appendChild(document.createElement("br"));
+}
+
+// ---------------- GAME LOGIC ----------------
 function shuffleWord(word){
   return word.split('').sort(()=>Math.random()-0.5).join('');
 }
 
 function startGame(){
-  correct=document.getElementById("wordsInput").value.trim().split("\n").slice(0,25);
-  if(correct.length===0) return alert("Add some words!");
+  // Get words from all boxes
+  correct = Array.from(document.querySelectorAll("#wordsInputBoxes input"))
+            .map(i => i.value.trim())
+            .filter(w => w !== "")
+            .slice(0,25);
+  if(correct.length===0) return alert("Please add at least 1 word!");
 
-  scrambled=correct.map(w=>shuffleWord(w));
+  scrambled = correct.map(w => shuffleWord(w));
 
+  // Teams
   teams=[]; scores=[];
   document.querySelectorAll(".teamRow").forEach(r=>{
-    const emoji=r.children[0].value;
-    const name=r.children[1].value||"Team";
+    const emoji = r.children[0].value;
+    const name = r.children[1].value||"Team";
     teams.push(`${emoji} ${name}`);
     scores.push(0);
   });
 
+  selectedTeam = null;
   renderScoreboard();
   renderCards();
+  document.getElementById("feedback").textContent="";
+  document.getElementById("winnerScreen").style.display="none";
 }
 
+// ---------------- SCOREBOARD ----------------
 function renderScoreboard(){
   const div=document.getElementById("scoreboard");
   div.innerHTML="";
@@ -194,6 +291,7 @@ function renderScoreboard(){
   });
 }
 
+// ---------------- CARDS ----------------
 function renderCards(){
   const div=document.getElementById("cards");
   div.innerHTML="";
@@ -206,24 +304,27 @@ function renderCards(){
   });
 }
 
+// ---------------- CHOICES ----------------
 function revealCard(card,i){
-  if(card.classList.contains("revealed"))return;
-  if(selectedTeam===null)return alert("Choose a team!");
-  card.classList.add("revealed");
-  card.textContent=correct[i];
-  currentAnswerIndex=i;
+  if(card.classList.contains("revealed")) return;
+  if(selectedTeam===null) return alert("Choose a team!");
+
+  currentAnswerIndex = i;
+  currentCard = card; // store card to reveal later
   showChoices();
 }
 
 function showChoices(){
   const div=document.getElementById("choices");
   div.innerHTML="<h2>Choose the correct answer</h2>";
+
   let options=[correct[currentAnswerIndex]];
   while(options.length<4){
     const r=correct[Math.floor(Math.random()*correct.length)];
     if(!options.includes(r)) options.push(r);
   }
   options.sort(()=>Math.random()-0.5);
+
   options.forEach(o=>{
     const b=document.createElement("button");
     b.className="choice";
@@ -236,14 +337,21 @@ function showChoices(){
 function checkAnswer(choice){
   const div=document.getElementById("choices");
   div.innerHTML="";
-  if(choice===correct[currentAnswerIndex]){
-    scores[selectedTeam]+=10;
+
+  // Reveal the card
+  currentCard.classList.add("revealed");
+  currentCard.textContent = correct[currentAnswerIndex];
+
+  if(choice === correct[currentAnswerIndex]){
+    scores[selectedTeam] += 10;
     document.getElementById("correctSound").play();
     document.getElementById("feedback").textContent="✅ Correct! +10";
-  }else{
+    launchConfetti();
+  } else {
     document.getElementById("wrongSound").play();
-    document.getElementById("feedback").textContent="❌ Try again next time!";
+    document.getElementById("feedback").textContent=`❌ Wrong! The answer was "${correct[currentAnswerIndex]}"`;
   }
+
   renderScoreboard();
   checkWin();
 }
@@ -256,8 +364,50 @@ function checkWin(){
     document.getElementById("winSound").play();
     document.getElementById("winnerScreen").style.display="block";
     document.getElementById("winnerScreen").textContent=`🏆 WINNER: ${winner} 🏆`;
+    launchConfetti();
   }
 }
+
+// ---------------- CONFETTI ----------------
+const confettiCanvas=document.getElementById("confetti");
+const ctx=confettiCanvas.getContext("2d");
+let confettiParticles=[];
+
+function resizeCanvas(){confettiCanvas.width=window.innerWidth; confettiCanvas.height=window.innerHeight;}
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+
+function launchConfetti(){
+  for(let i=0;i<100;i++){
+    confettiParticles.push({
+      x: Math.random()*confettiCanvas.width,
+      y: Math.random()*confettiCanvas.height- confettiCanvas.height,
+      r: Math.random()*6+4,
+      d: Math.random()*10+5,
+      color:`hsl(${Math.random()*360}, 100%, 50%)`,
+      tilt: Math.random()*10-10,
+      tiltAngleIncrement: Math.random()*0.07+0.05
+    });
+  }
+}
+
+function drawConfetti(){
+  ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  confettiParticles.forEach(p=>{
+    ctx.beginPath();
+    ctx.lineWidth=p.r/2;
+    ctx.strokeStyle=p.color;
+    ctx.moveTo(p.x+p.tilt+p.r/4, p.y);
+    ctx.lineTo(p.x+p.tilt, p.y+p.tilt+p.r/2);
+    ctx.stroke();
+    p.tiltAngle+=p.tiltAngleIncrement;
+    p.y += (Math.cos(p.d)+1+ p.r/2)/2;
+    p.x += Math.sin(p.tiltAngle)*2;
+    if(p.y>confettiCanvas.height) p.y=-10;
+  });
+  requestAnimationFrame(drawConfetti);
+}
+drawConfetti();
 </script>
 
 </body>
