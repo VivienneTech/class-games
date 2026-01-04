@@ -2,75 +2,159 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaFlip: Classroom Game</title>
+<title>VocaFlip: Vocabulary Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+
 body {
   margin:0;
-  font-family: system-ui;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  background:#f5f7fa;
+  font-family: 'Comic Neue', cursive;
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 h1 {
   color:#c4161c;
   font-size:3rem;
-  text-align:center;
   margin:0.5rem;
+  text-align:center;
 }
-h2 { font-size:2rem; text-align:center; margin:0.5rem; }
-.main { width:100%; max-width:1600px; display:flex; flex-direction:column; align-items:center; gap:1rem; }
-#rulesPanel {
+h2 {
+  color:#003a8f;
+  font-size:1.5rem;
+  margin:0.2rem;
+  text-align:center;
+}
+.main{
+  width:100%;
+  max-width:1400px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1rem;
+}
+#rules{
   background:#fff;
-  border-radius:12px;
-  padding:1rem 2rem;
+  padding:1rem;
+  border-radius:10px;
+  font-size:1.2rem;
   width:90%;
-  font-size:1.3rem;
 }
-#teamSetup {
-  display:flex; gap:2rem; width:90%; justify-content:space-between; margin-top:1rem;
-}
-#teamsArea {
-  flex:1;
-  display:flex; flex-direction:column; gap:0.5rem;
-}
-.teamInput {
-  font-size:1.2rem; padding:0.5rem; width:150px;
-}
-.teamBtn {
-  font-size:2rem; padding:1rem; cursor:pointer; border:none; border-radius:12px; margin-top:0.5rem;
-}
-#wordsArea {
-  flex:3;
-  display:grid;
-  grid-template-columns: repeat(5, 1fr);
+#teacherPanel{
+  display:flex;
+  flex-wrap:wrap;
   gap:0.5rem;
+  width:90%;
+  justify-content:flex-start;
+  margin-top:1rem;
 }
-.wordBox {
-  font-size:1.2rem; padding:1rem; text-align:center; border-radius:8px; border:2px solid #003a8f; background:white; cursor:pointer; min-height:60px;
+.wordRow{
+  display:flex;
+  gap:0.5rem;
+  margin-bottom:0.3rem;
 }
-button { font-size:1.3rem; padding:0.8rem 1.2rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer; margin-top:0.5rem;}
-button:hover { background:#c4161c; }
-#numberPanel {
-  display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem; margin-top:1rem;
+.wordRow input{
+  font-size:1.1rem;
+  padding:0.5rem;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
-.numberBox {
-  width:60px; height:60px; display:flex; justify-content:center; align-items:center; background:#c4161c; color:white; font-size:1.5rem; border-radius:12px; cursor:pointer;
+.wordInput{width:120px;}
+.meaningInput{width:300px;}
+button{
+  font-size:1.2rem;
+  padding:0.6rem 1rem;
+  border:none;
+  border-radius:8px;
+  background:#003a8f;
+  color:white;
+  cursor:pointer;
+  margin-top:0.5rem;
 }
-.numberBox.used { background:#003a8f; cursor:default; }
-#questionPanel { display:none; flex-direction:column; align-items:center; gap:1rem; width:80%; margin-top:1rem; }
-#meaningBox { font-size:2rem; background:#fff; padding:1.5rem 2rem; border-radius:12px; text-align:center; min-height:80px; width:100%; }
-#choices { display:flex; flex-direction:column; gap:1rem; width:100%; }
-.choiceBtn {
-  font-size:1.5rem; padding:1rem; border:none; border-radius:12px; background:#003a8f; color:white; cursor:pointer; width:100%;
+button:hover{background:#c4161c;}
+#teams{
+  display:flex;
+  gap:1rem;
+  margin-top:1rem;
+  font-size:1.3rem;
+  flex-wrap:wrap;
 }
-.choiceBtn:hover { background:#c4161c; }
-#feedback { font-size:1.8rem; min-height:40px; margin-top:1rem; text-align:center; }
-#scoreboard { display:flex; gap:1rem; margin-top:1rem; font-size:1.5rem; flex-wrap:wrap; justify-content:center; }
-.teamScore { padding:0.5rem 1rem; border-radius:12px; background:#ddd; cursor:pointer; }
-.teamScore.current { background:#003a8f; color:white; font-weight:700; }
-canvas { position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+.team{
+  padding:0.5rem 1rem;
+  border-radius:12px;
+  background:#ddd;
+  cursor:pointer;
+  font-size:1.4rem;
+}
+.team.current{
+  background:#003a8f;
+  color:white;
+  font-weight:700;
+  transform: scale(1.1);
+  transition: transform 0.3s;
+}
+#numberedBoxes{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px,1fr));
+  gap:0.5rem;
+  width:90%;
+  margin-top:1rem;
+}
+.numberBox{
+  background:linear-gradient(45deg,#ff7eb3,#ff758c);
+  color:white;
+  font-size:1.5rem;
+  font-weight:bold;
+  border-radius:12px;
+  padding:1rem;
+  text-align:center;
+  cursor:pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.numberBox.selected{
+  background:green;
+  transform: scale(1.1);
+}
+.numberBox:hover{
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+#meaningPanel{
+  margin-top:1rem;
+  background:#003a8f;
+  color:white;
+  border-radius:12px;
+  padding:1rem;
+  font-size:1.5rem;
+  width:90%;
+  max-width:800px;
+  min-height:120px;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  gap:0.5rem;
+  text-align:center;
+}
+.choiceBtn{
+  padding:0.7rem 1rem;
+  border:none;
+  border-radius:12px;
+  font-size:1.4rem;
+  cursor:pointer;
+  transition: transform 0.2s;
+}
+.choiceBtn:hover{
+  transform: scale(1.05);
+}
+.correct{background:#28a745; color:white;}
+.wrong{background:#dc3545; color:white;}
+#feedback{
+  margin-top:1rem;
+  font-size:1.4rem;
+  min-height:30px;
+  text-align:center;
+}
 </style>
 </head>
 <body>
@@ -80,189 +164,202 @@ canvas { position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
 
 <div class="main">
 
-<div id="rulesPanel">
+<div id="rules">
 <strong>Rules:</strong>
 <ol>
-<li>Choose your team and emoji on the scoreboard.</li>
-<li>Pick a number from the numbered boxes panel to select a question.</li>
-<li>The big panel shows the meaning. Think carefully!</li>
-<li>Choose the correct word from the 3 answer options.</li>
-<li>The teacher clicks your choice to confirm.</li>
-<li>✅ Correct → +10 points, short confetti. ❌ Wrong → 0 points, correct word shown briefly.</li>
-<li>Next turn rotates to another team. Repeat until all numbers are used.</li>
-<li>The team with the highest score wins! 🎉 Winner gets long confetti celebration.</li>
+<li>Teacher enters words and meanings in the panel below (Word Box then Meaning Box).</li>
+<li>Students choose a numbered box.</li>
+<li>The meaning appears along with 3 answer choices.</li>
+<li>Students pick the correct answer. Teacher clicks it to reveal correctness.</li>
+<li>Correct = +10 points, wrong = 0 points.</li>
+<li>Teams take turns selecting boxes until all boxes are used.</li>
 </ol>
 </div>
 
-<div id="teamSetup">
-  <div id="teamsArea">
-    <input class="teamInput" placeholder="Team 1" id="team1">
-    <input class="teamInput" placeholder="Team 2" id="team2">
-    <input class="teamInput" placeholder="Team 3" id="team3">
-    <div id="scoreboard"></div>
-  </div>
-  <div id="wordsArea"></div>
+<h2>Enter Words</h2>
+<div id="teacherPanel">
+<!-- Word boxes will be added dynamically -->
 </div>
-
+<button onclick="addQuestion()">+ Add Question</button>
 <button onclick="startGame()">Start Game</button>
 
-<div id="numberPanel"></div>
-<div id="questionPanel">
-  <div id="meaningBox"></div>
-  <div id="choices"></div>
+<h2>Teams</h2>
+<div id="teamInputs">
+<input type="text" value="Team 1" id="team1">
+<input type="text" value="Team 2" id="team2">
+<input type="text" value="Team 3" id="team3">
+</div>
+<div id="teams"></div>
+
+<div id="numberedBoxes"></div>
+
+<div id="meaningPanel">
+<div id="meaningText"></div>
+<div id="choicesContainer" style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;"></div>
 </div>
 
 <div id="feedback"></div>
 <button onclick="restartGame()">Restart</button>
 
-<canvas id="confetti"></canvas>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- Sounds -->
+<audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+<audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
 <script>
-let words = []; // {meaning, word}
-let numberBoxes = [];
-let teams = [];
-let scores = [];
-let selectedTeam = null;
-let currentQuestionIndex = null;
+let questions=[], teams=[], scores=[], selectedTeam=null;
+let currentQuestion=null;
 
-// Example prefilled words (superlative adjectives)
-words = [
-  {meaning:"Having the greatest height", word:"tallest"},
-  {meaning:"Most bright or shining", word:"brightest"},
-  {meaning:"Most beautiful", word:"prettiest"},
-  {meaning:"Most fast", word:"fastest"},
-  {meaning:"Most big", word:"biggest"},
-  {meaning:"Most small", word:"smallest"},
-  {meaning:"Most strong", word:"strongest"},
-  {meaning:"Most smart", word:"smartest"},
-  {meaning:"Most long", word:"longest"},
-  {meaning:"Most hot", word:"hottest"},
-  {meaning:"Most cold", word:"coldest"},
-  {meaning:"Most heavy", word:"heaviest"},
-  {meaning:"Most light", word:"lightest"},
-  {meaning:"Most kind", word:"kindest"},
-  {meaning:"Most rich", word:"richest"},
-  {meaning:"Most poor", word:"poorest"},
-  {meaning:"Most loud", word:"loudest"},
-  {meaning:"Most quiet", word:"quietest"},
-  {meaning:"Most early", word:"earliest"},
-  {meaning:"Most late", word:"latest"},
-  {meaning:"Most easy", word:"easiest"},
-  {meaning:"Most hard", word:"hardest"},
-  {meaning:"Most funny", word:"funniest"},
-  {meaning:"Most interesting", word:"most interesting"},
-  {meaning:"Most simple", word:"simplest"}
-];
+function addQuestion(){
+  const panel = document.getElementById("teacherPanel");
+  const row = document.createElement("div");
+  row.className="wordRow";
 
-const emojis = ["🍎","🍓","🍇","🍉","🍒","🍍","🥦","🌽","🥭","🌸"];
+  const wordInput = document.createElement("input");
+  wordInput.type="text";
+  wordInput.placeholder="Word";
+  wordInput.className="wordInput";
 
-function startGame() {
-  // Teams
-  teams = [
-    document.getElementById("team1").value||"Team 1",
-    document.getElementById("team2").value||"Team 2",
-    document.getElementById("team3").value||"Team 3"
-  ].filter(t=>t!=="");
-  scores = teams.map(_=>0);
-  selectedTeam = null;
-  renderTeams();
-  renderNumberPanel();
-  document.getElementById("feedback").textContent="";
+  const meaningInput = document.createElement("input");
+  meaningInput.type="text";
+  meaningInput.placeholder="Meaning";
+  meaningInput.className="meaningInput";
+
+  row.appendChild(wordInput);
+  row.appendChild(meaningInput);
+  panel.appendChild(row);
 }
 
-function renderTeams() {
-  const sb = document.getElementById("scoreboard");
-  sb.innerHTML = "";
+function startGame(){
+  const panel = document.getElementById("teacherPanel");
+  const rows = panel.querySelectorAll(".wordRow");
+  questions=[];
+  rows.forEach(r=>{
+    const word = r.querySelector(".wordInput").value.trim();
+    const meaning = r.querySelector(".meaningInput").value.trim();
+    if(word && meaning) questions.push({word, meaning, revealed:false});
+  });
+  if(questions.length===0) return alert("Enter at least one word and meaning!");
+
+  // Shuffle questions
+  for(let i=questions.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [questions[i],questions[j]]=[questions[j],questions[i]];
+  }
+
+  // Teams
+  teams = [document.getElementById("team1").value||"Team 1",
+           document.getElementById("team2").value||"Team 2",
+           document.getElementById("team3").value||"Team 3"].filter(t=>t!=="");
+  scores = teams.map(_=>0);
+  selectedTeam = null;
+
+  renderTeams();
+  renderNumberedBoxes();
+  document.getElementById("teacherPanel").style.display="none";
+  document.getElementById("teamInputs").style.display="none";
+}
+
+function renderTeams(){
+  const div = document.getElementById("teams");
+  div.innerHTML="";
   teams.forEach((t,i)=>{
-    const d = document.createElement("div");
-    d.className="teamScore" + (i===selectedTeam?" current":"");
-    d.textContent=`${emojis[i%emojis.length]} ${t}: ${scores[i]} pts`;
+    const d=document.createElement("div");
+    d.className="team"+(i===selectedTeam?" current":"");
+    d.textContent = `${t}: ${scores[i]} pts`;
     d.onclick=()=>{ selectedTeam=i; renderTeams(); }
-    sb.appendChild(d);
+    div.appendChild(d);
   });
 }
 
-function renderNumberPanel() {
-  const np = document.getElementById("numberPanel");
-  np.innerHTML="";
-  words.forEach((w,i)=>{
+function renderNumberedBoxes(){
+  const div = document.getElementById("numberedBoxes");
+  div.innerHTML="";
+  questions.forEach((q,i)=>{
     const box = document.createElement("div");
     box.className="numberBox";
     box.textContent=i+1;
-    if(w.used) box.classList.add("used");
-    box.onclick=()=>{ if(!w.used && selectedTeam!==null) chooseQuestion(i); }
-    np.appendChild(box);
+    box.onclick=()=> selectQuestion(i, box);
+    div.appendChild(box);
   });
 }
 
-function chooseQuestion(index) {
-  currentQuestionIndex=index;
-  const q = words[index];
-  q.used=true;
-  document.getElementById("numberPanel").style.display="none";
-  const qp = document.getElementById("questionPanel");
-  qp.style.display="flex";
-  document.getElementById("meaningBox").textContent=q.meaning;
-  const choicesDiv = document.getElementById("choices");
-  choicesDiv.innerHTML="";
-  // create 3 choices, 1 correct + 2 random
-  const correct = q.word;
-  const options = [correct];
-  while(options.length<3){
-    const r = words[Math.floor(Math.random()*words.length)].word;
-    if(!options.includes(r)) options.push(r);
+function selectQuestion(index, box){
+  if(!selectedTeam) return alert("Select a team first!");
+  if(questions[index].revealed) return;
+  // Highlight selected box
+  document.querySelectorAll(".numberBox").forEach(b=>b.classList.remove("selected"));
+  box.classList.add("selected");
+
+  currentQuestion=index;
+  showMeaningPanel(questions[index]);
+}
+
+function showMeaningPanel(question){
+  const panel = document.getElementById("meaningPanel");
+  panel.style.display="flex";
+  document.getElementById("meaningText").textContent=question.meaning;
+
+  // Prepare 3 choices
+  const container = document.getElementById("choicesContainer");
+  container.innerHTML="";
+  let choices = [question.word];
+
+  // pick 2 random wrong words
+  const wrongs = questions.filter(q=>q.word!==question.word).map(q=>q.word);
+  for(let i=0;i<2;i++){
+    const w = wrongs.splice(Math.floor(Math.random()*wrongs.length),1)[0];
+    choices.push(w);
   }
-  // shuffle
-  options.sort(()=>Math.random()-0.5);
-  options.forEach(opt=>{
+
+  // Shuffle choices
+  for(let i=choices.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [choices[i],choices[j]]=[choices[j],choices[i]];
+  }
+
+  choices.forEach(c=>{
     const btn = document.createElement("button");
     btn.className="choiceBtn";
-    btn.textContent=opt;
-    btn.onclick=()=>checkAnswer(opt===correct, btn);
-    choicesDiv.appendChild(btn);
+    btn.textContent=c;
+    btn.onclick=()=> handleChoice(btn, question);
+    container.appendChild(btn);
   });
 }
 
-function checkAnswer(isCorrect, btn) {
-  const q = words[currentQuestionIndex];
-  if(isCorrect){
+function handleChoice(btn, question){
+  if(question.revealed) return;
+  if(btn.textContent===question.word){
+    btn.classList.add("correct");
     scores[selectedTeam]+=10;
     document.getElementById("feedback").textContent="✅ Correct! +10 points";
-    launchConfetti(100); // short confetti
+    document.getElementById("correctSound").play();
+    confetti({particleCount: 50, spread: 60, origin:{y:0.6}});
   } else {
-    document.getElementById("feedback").textContent=`❌ Wrong! Correct answer: ${q.word}`;
+    btn.classList.add("wrong");
+    document.getElementById("feedback").textContent=`❌ Wrong! The word was: ${question.word}`;
+    document.getElementById("wrongSound").play();
   }
+  question.revealed=true;
   renderTeams();
-  // Reset panel after 1.5 sec
-  setTimeout(()=>{
-    document.getElementById("questionPanel").style.display="none";
-    document.getElementById("numberPanel").style.display="flex";
-    renderNumberPanel();
-    checkEndGame();
-  },1500);
-}
 
-function checkEndGame() {
-  if(words.every(w=>w.used)){
-    const maxScore=Math.max(...scores);
-    const winners = teams.filter((t,i)=>scores[i]===maxScore);
-    document.getElementById("feedback").textContent=`🎉 Winner: ${winners.join(", ")}!`;
-    launchConfetti(5000); // long confetti for winner
+  // Remove box highlight
+  document.querySelectorAll(".numberBox")[currentQuestion].classList.add("revealed");
+
+  // Check for final winner
+  if(questions.every(q=>q.revealed)){
+    document.getElementById("feedback").textContent += " 🎉 All questions answered! 🎉";
+    confetti({particleCount: 300, spread: 150, origin:{y:0.6}});
   }
 }
 
-function restartGame(){window.location.reload();}
+function restartGame(){ window.location.reload(); }
 
-function launchConfetti(duration=1000){
-  const end = Date.now() + duration;
-  const canvas = document.getElementById("confetti");
-  (function frame(){
-    confetti({particleCount:5, spread:60, origin:{y:0.6}, zIndex:9999});
-    if(Date.now()<end) requestAnimationFrame(frame);
-  }());
-}
+// Initialize 5 question boxes
+for(let i=0;i<5;i++) addQuestion();
 </script>
 
 </body>
