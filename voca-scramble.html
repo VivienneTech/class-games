@@ -2,155 +2,262 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaScramble: Interactive Team Game</title>
+<title>VocaScramble 🍎 Kids Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body {
-  margin:0; 
-  font-family: system-ui; 
-  background: #f5f7fa; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: flex-start; 
-  min-height: 100vh;
+body{
+  margin:0;
+  font-family: "Comic Sans MS", system-ui;
+  background: linear-gradient(#fff7e6,#ffe0b2);
+  text-align:center;
 }
-h1 {color:#c4161c; font-size:3rem; margin:1rem; text-align:center;}
-.main {width:100%; max-width:1400px; display:flex; flex-direction:column; align-items:center; gap:1rem; flex:1;}
-#rules {
-  background:#fff; padding:1rem; border-radius:10px; 
-  font-size:1.2rem; width:90%; text-align:left;
+h1{color:#e53935;font-size:3rem;margin:1rem;}
+h2{color:#fb8c00;}
+
+.main{max-width:1400px;margin:auto;padding:1rem;}
+
+textarea{
+  width:90%;max-width:600px;height:120px;
+  font-size:1.2rem;padding:0.5rem;
 }
-textarea {font-size:1.2rem; padding:0.5rem; width:100%; max-width:600px; height:150px;}
-input[type="text"] {font-size:1.2rem; padding:0.4rem; width:150px;}
-button {font-size:1.3rem; padding:0.7rem 1rem; border:none; border-radius:8px; background:#003a8f; color:white; cursor:pointer; margin-top:0.5rem;}
-button:hover {background:#c4161c;}
-#teams {display:flex; gap:1rem; margin-top:1rem; font-size:1.3rem; flex-wrap:wrap;}
-.team {padding:0.5rem 1rem; border-radius:8px; background:#ddd; cursor:pointer;}
-.team.current {background:#003a8f; color:white; font-weight:700;}
-#cards {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); 
-  grid-template-rows: repeat(5, 120px);
-  gap: 1rem;
-  width: 90%;
-  justify-items: center;
-  align-content: start;
+
+button{
+  font-size:1.3rem;
+  padding:0.6rem 1rem;
+  margin:0.4rem;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  background:#43a047;
+  color:white;
 }
-.card {
-  width:100%; height:100%; 
-  background:#c4161c; color:white; 
-  display:flex; align-items:center; justify-content:center; 
-  font-weight:bold; cursor:pointer; border-radius:12px; 
-  font-size:1.5rem; user-select:none;
+button:hover{background:#2e7d32;}
+
+#teamSetup{margin:1rem;}
+.teamRow{
+  display:flex;
+  justify-content:center;
+  gap:0.5rem;
+  margin-bottom:0.5rem;
 }
-.card.revealed {background:#003a8f;}
-#feedback {margin-top:1rem; font-size:1.5rem; min-height:30px; text-align:center;}
+.teamRow input, select{
+  font-size:1.1rem;
+  padding:0.3rem;
+}
+
+#scoreboard{
+  display:flex;
+  justify-content:center;
+  gap:1rem;
+  flex-wrap:wrap;
+  font-size:1.6rem;
+  margin:1rem 0;
+}
+.team{
+  padding:0.6rem 1rem;
+  border-radius:15px;
+  background:#fff;
+  border:3px solid #ffcc80;
+  cursor:pointer;
+}
+.team.current{
+  background:#ff7043;
+  color:white;
+  font-weight:bold;
+}
+
+#cards{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:1rem;
+  width:90%;
+  margin:auto;
+}
+.card{
+  background:#ef5350;
+  color:white;
+  font-size:1.5rem;
+  font-weight:bold;
+  border-radius:15px;
+  height:110px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.card.revealed{background:#42a5f5;}
+
+#choices{
+  margin-top:1rem;
+}
+.choice{
+  background:#ffd54f;
+  color:#000;
+  font-size:1.3rem;
+}
+.choice:hover{background:#ffb300;}
+
+#feedback{
+  font-size:1.8rem;
+  margin:1rem;
+  min-height:40px;
+}
+
+#winnerScreen{
+  display:none;
+  font-size:3rem;
+  color:#2e7d32;
+}
 </style>
 </head>
+
 <body>
 
-<h1>VocaScramble: Interactive Team Game</h1>
+<h1>🍓 VocaScramble 🍌</h1>
 
 <div class="main">
 
-<div id="rules">
-<strong>Rules:</strong>
-<ol>
-<li>All scrambled words are visible on the screen.</li>
-<li>A student from a team comes to the screen and clicks their team name to select it.</li>
-<li>Then, they click a card to reveal the correct word.</li>
-<li>The selected team guesses the word. Correct = +10 points.</li>
-<li>If wrong, no points are awarded.</li>
-<li>Teams take turns selecting cards until all cards are answered.</li>
-</ol>
-</div>
+<h2>Enter Words (max 25)</h2>
+<textarea id="wordsInput" placeholder="biggest\nfastest\nhappiest"></textarea>
 
-<h2>Enter Vocabulary Words</h2>
-<textarea id="wordsInput" placeholder="skyscraper\nelephant\npineapple"></textarea>
+<h2>Teams 🍎</h2>
+<div id="teamSetup"></div>
+<button onclick="addTeam()">➕ Add Team</button>
 
-<h2>Teams</h2>
-<div id="teamInputs">
-<input type="text" value="Team 1" id="team1">
-<input type="text" value="Team 2" id="team2">
-<input type="text" value="Team 3" id="team3">
-</div>
+<br>
+<button onclick="startGame()">▶ Start Game</button>
 
-<button onclick="startGame()">Start Game</button>
-
-<div id="teams"></div>
+<div id="scoreboard"></div>
 <div id="cards"></div>
+<div id="choices"></div>
 <div id="feedback"></div>
-<button onclick="restartGame()">Restart</button>
+
+<div id="winnerScreen"></div>
 
 </div>
+
+<!-- 🔊 Sounds -->
+<audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+<audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/ta_da.ogg"></audio>
 
 <script>
-let scrambled=[], correct=[], teams=[], scores=[], selectedTeam=null;
+let correct=[], scrambled=[];
+let teams=[], scores=[], selectedTeam=null;
+let currentAnswerIndex=null;
 
-// Function to shuffle letters in a word
+const fruits=["🍎","🍌","🍇","🍉","🍓","🍍","🥭","🍒"];
+
+function addTeam(){
+  const div=document.createElement("div");
+  div.className="teamRow";
+  div.innerHTML=`
+    <select>${fruits.map(f=>`<option>${f}</option>`).join("")}</select>
+    <input placeholder="Team name">
+  `;
+  document.getElementById("teamSetup").appendChild(div);
+}
+addTeam(); addTeam();
+
 function shuffleWord(word){
-  const arr = word.split('');
-  for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i], arr[j]]=[arr[j],arr[i]];
-  }
-  return arr.join('');
+  return word.split('').sort(()=>Math.random()-0.5).join('');
 }
 
 function startGame(){
-  correct = document.getElementById("wordsInput").value.trim().split("\n").map(w=>w.trim()).filter(w=>w!=="").slice(0,25);
-  if(correct.length===0) return alert("Please enter at least 1 vocabulary word (max 25).");
-  
-  scrambled = correct.map(w=>shuffleWord(w));
+  correct=document.getElementById("wordsInput").value.trim().split("\n").slice(0,25);
+  if(correct.length===0) return alert("Add some words!");
 
-  teams = [document.getElementById("team1").value||"Team 1",
-           document.getElementById("team2").value||"Team 2",
-           document.getElementById("team3").value||"Team 3"].filter(t=>t!=="");
-  scores = teams.map(_=>0);
-  selectedTeam = null;
-  renderTeams();
+  scrambled=correct.map(w=>shuffleWord(w));
+
+  teams=[]; scores=[];
+  document.querySelectorAll(".teamRow").forEach(r=>{
+    const emoji=r.children[0].value;
+    const name=r.children[1].value||"Team";
+    teams.push(`${emoji} ${name}`);
+    scores.push(0);
+  });
+
+  renderScoreboard();
   renderCards();
 }
 
-function renderTeams(){
-  const div = document.getElementById("teams");
-  div.innerHTML = "";
+function renderScoreboard(){
+  const div=document.getElementById("scoreboard");
+  div.innerHTML="";
   teams.forEach((t,i)=>{
-    const d = document.createElement("div");
-    d.className = "team" + (i===selectedTeam ? " current" : "");
-    d.textContent = `${t}: ${scores[i]} pts`;
-    d.onclick = () => { selectedTeam = i; renderTeams(); }
+    const d=document.createElement("div");
+    d.className="team"+(i===selectedTeam?" current":"");
+    d.textContent=`${t}: ${scores[i]}`;
+    d.onclick=()=>{selectedTeam=i;renderScoreboard();}
     div.appendChild(d);
   });
 }
 
 function renderCards(){
-  const div = document.getElementById("cards");
-  div.innerHTML = "";
+  const div=document.getElementById("cards");
+  div.innerHTML="";
   scrambled.forEach((s,i)=>{
-    const card = document.createElement("div");
-    card.className = "card";
-    card.textContent = s;
-    card.onclick = function(){
-      if(card.classList.contains("revealed")) return;
-      if(selectedTeam === null) return alert("Select a team first!");
-      card.classList.add("revealed");
-      card.textContent = correct[i];
-      const answer = prompt(`Team ${teams[selectedTeam]}: Guess the word!`);
-      if(answer && answer.trim().toLowerCase() === correct[i].toLowerCase()){
-        scores[selectedTeam] += 10;
-        document.getElementById("feedback").textContent = `✅ Correct! +10 points`;
-      } else {
-        document.getElementById("feedback").textContent = `❌ Wrong! The word was: ${correct[i]}`;
-      }
-      renderTeams();
-    }
-    div.appendChild(card);
+    const c=document.createElement("div");
+    c.className="card";
+    c.textContent=s;
+    c.onclick=()=>revealCard(c,i);
+    div.appendChild(c);
   });
 }
 
-function restartGame(){window.location.reload();}
+function revealCard(card,i){
+  if(card.classList.contains("revealed"))return;
+  if(selectedTeam===null)return alert("Choose a team!");
+  card.classList.add("revealed");
+  card.textContent=correct[i];
+  currentAnswerIndex=i;
+  showChoices();
+}
+
+function showChoices(){
+  const div=document.getElementById("choices");
+  div.innerHTML="<h2>Choose the correct answer</h2>";
+  let options=[correct[currentAnswerIndex]];
+  while(options.length<4){
+    const r=correct[Math.floor(Math.random()*correct.length)];
+    if(!options.includes(r)) options.push(r);
+  }
+  options.sort(()=>Math.random()-0.5);
+  options.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="choice";
+    b.textContent=o;
+    b.onclick=()=>checkAnswer(o);
+    div.appendChild(b);
+  });
+}
+
+function checkAnswer(choice){
+  const div=document.getElementById("choices");
+  div.innerHTML="";
+  if(choice===correct[currentAnswerIndex]){
+    scores[selectedTeam]+=10;
+    document.getElementById("correctSound").play();
+    document.getElementById("feedback").textContent="✅ Correct! +10";
+  }else{
+    document.getElementById("wrongSound").play();
+    document.getElementById("feedback").textContent="❌ Try again next time!";
+  }
+  renderScoreboard();
+  checkWin();
+}
+
+function checkWin(){
+  const allRevealed=[...document.querySelectorAll(".card")].every(c=>c.classList.contains("revealed"));
+  if(allRevealed){
+    const max=Math.max(...scores);
+    const winner=teams[scores.indexOf(max)];
+    document.getElementById("winSound").play();
+    document.getElementById("winnerScreen").style.display="block";
+    document.getElementById("winnerScreen").textContent=`🏆 WINNER: ${winner} 🏆`;
+  }
+}
 </script>
 
 </body>
