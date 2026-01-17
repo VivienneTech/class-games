@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>🌸 Picture Flip ESL 🌸</title>
+<title>🌸 VocaFlip – Picture Edition 🌸</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -10,27 +10,45 @@ body{
   margin:0;
   font-family:'Comic Sans MS', cursive;
   background:#fff0f6;
+  text-align:center;
+}
+h1{color:#ff4d6d;margin:10px;}
+#subtitle{color:#555;margin-bottom:10px;}
+
+button{
+  padding:10px 15px;
+  font-size:1.1rem;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
 }
 
-h1{text-align:center;color:#ff4d6d;}
+#controls button{margin:5px;}
+#addTeamBtn{background:#ff9aa2;}
+#addCardBtn{background:#fcbf49;}
+#startBtn{background:#8ac926;}
+#restartBtn{background:#9b5de5;color:white;}
 
-#app{
+#setup{
   display:flex;
+  justify-content:center;
+  gap:20px;
+  flex-wrap:wrap;
 }
 
-/* LEFT IMAGE PANEL */
+/* IMAGE PANEL */
 #imagePanel{
-  width:220px;
+  width:200px;
   background:#ffe5ec;
   padding:10px;
-  overflow-y:auto;
-}
-
-.imageThumb{
-  width:90px;
-  height:90px;
-  background:white;
   border-radius:16px;
+}
+.imageThumb{
+  width:80px;
+  height:80px;
+  background:white;
+  border-radius:14px;
   margin:8px auto;
   cursor:pointer;
   display:flex;
@@ -43,60 +61,66 @@ h1{text-align:center;color:#ff4d6d;}
   object-fit:contain;
 }
 
-/* MAIN */
-#main{
-  flex:1;
-  padding:10px;
-  text-align:center;
-}
-
-.cardInput{
+/* BUILDER */
+#builder{
   background:white;
-  margin:10px auto;
-  padding:10px;
+  padding:15px;
   border-radius:16px;
   width:260px;
 }
-
 #preview{
   width:80px;
   height:80px;
   object-fit:contain;
+  margin-bottom:5px;
+}
+input{
+  width:90%;
+  padding:6px;
+  font-size:1rem;
+  margin-top:5px;
 }
 
-button{
-  padding:10px 16px;
-  border:none;
+/* TEAMS */
+#teams{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:10px;
+}
+.team{
+  padding:10px 15px;
   border-radius:12px;
-  font-size:1rem;
+  font-size:1.2rem;
   font-weight:bold;
   cursor:pointer;
-  margin:5px;
+  color:white;
+}
+.team.current{
+  box-shadow:0 0 10px gold;
+  transform:scale(1.05);
 }
 
-#startBtn{background:#8ac926;}
-#addCardBtn{background:#fcbf49;}
-#restartBtn{background:#9b5de5;color:white;}
-
+/* CARDS */
 #cards{
   display:grid;
-  grid-template-columns:repeat(auto-fill,120px);
+  grid-template-columns:repeat(auto-fill,100px);
   justify-content:center;
   gap:15px;
-  margin-top:20px;
+  margin:20px;
 }
-
 .card{
-  width:120px;
-  height:120px;
+  width:100px;
+  height:100px;
   perspective:800px;
   cursor:pointer;
 }
 .inner{
   width:100%;
   height:100%;
-  transform-style:preserve-3d;
   transition:transform 0.6s;
+  transform-style:preserve-3d;
 }
 .card.flipped .inner{
   transform:rotateY(180deg);
@@ -105,14 +129,17 @@ button{
   position:absolute;
   width:100%;
   height:100%;
-  border-radius:20px;
+  border-radius:16px;
   backface-visibility:hidden;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:3rem;
+  font-size:2rem;
+  font-weight:bold;
 }
-.front{background:#ffcad4;}
+.front{
+  background:#ffcad4;
+}
 .back{
   background:white;
   transform:rotateY(180deg);
@@ -122,114 +149,178 @@ button{
   height:90%;
   object-fit:contain;
 }
+
+/* TEACHER OPTIONS */
+#options{margin-top:10px;}
+.optionBtn{
+  margin:5px;
+  padding:10px 18px;
+  font-size:1.2rem;
+  border-radius:12px;
+  color:white;
+}
+.correct{background:#38b000;}
+.wrong{background:#d00000;}
+
+#feedback{
+  font-size:1.4rem;
+  min-height:40px;
+  margin-top:10px;
+}
 </style>
 </head>
 
 <body>
 
-<h1>🌸 Picture Flip 🌸</h1>
+<h1>🌸 VocaFlip 🌸</h1>
+<div id="subtitle">Picture Speaking Game</div>
 
-<div id="app">
-
-<!-- IMAGE PANEL -->
-<div id="imagePanel">
-  <h3>🖼 Pick a picture</h3>
-
-  <div class="imageThumb" onclick="pickImage('dog')">
-    <img src="https://openclipart.org/image/200px/282123">
-  </div>
-  <div class="imageThumb" onclick="pickImage('cat')">
-    <img src="https://openclipart.org/image/200px/282122">
-  </div>
-  <div class="imageThumb" onclick="pickImage('apple')">
-    <img src="https://openclipart.org/image/200px/282124">
-  </div>
+<div id="controls">
+  <button id="addTeamBtn">Add Team</button>
+  <button id="addCardBtn">Add Card</button>
+  <button id="startBtn">Start Game</button>
+  <button id="restartBtn">Restart</button>
 </div>
 
-<!-- MAIN -->
-<div id="main">
+<div id="setup">
+  <div id="imagePanel">
+    <h3>🖼 Pictures</h3>
+
+    <div class="imageThumb" onclick="pickImage('dog')">
+      <img src="https://openclipart.org/image/200px/282123">
+    </div>
+    <div class="imageThumb" onclick="pickImage('cat')">
+      <img src="https://openclipart.org/image/200px/282122">
+    </div>
+    <div class="imageThumb" onclick="pickImage('apple')">
+      <img src="https://openclipart.org/image/200px/282124">
+    </div>
+  </div>
 
   <div id="builder">
-    <div class="cardInput">
-      <p>Selected picture</p>
-      <img id="preview">
-      <br><br>
-      <input id="wordInput" placeholder="Word (teacher)" />
-    </div>
-
-    <button id="addCardBtn">➕ Add Card</button>
-    <button id="startBtn">🎮 Start Game</button>
+    <p>Selected picture</p>
+    <img id="preview">
+    <input id="wordInput" placeholder="Word (teacher)">
   </div>
-
-  <div id="cards"></div>
-
 </div>
-</div>
+
+<div id="teams"></div>
+<div id="cards"></div>
+<div id="options"></div>
+<div id="feedback"></div>
 
 <script>
+/* IMAGE LIBRARY */
 const imageMap = {
-  dog: "https://openclipart.org/image/400px/282123",
-  cat: "https://openclipart.org/image/400px/282122",
-  apple: "https://openclipart.org/image/400px/282124"
+  dog:"https://openclipart.org/image/400px/282123",
+  cat:"https://openclipart.org/image/400px/282122",
+  apple:"https://openclipart.org/image/400px/282124"
 };
 
-let selectedImage = null;
-let cardsData = [];
+/* STATE */
+let selectedImage=null;
+let cardsData=[];
+let teams=[];
+let scores=[];
+let currentTeam=null;
+let currentCard=null;
 
+const teamColors=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93"];
+
+/* IMAGE PICK */
 function pickImage(word){
-  selectedImage = imageMap[word];
-  document.getElementById("preview").src = selectedImage;
-  document.getElementById("wordInput").value = word;
+  selectedImage=imageMap[word];
+  document.getElementById("preview").src=selectedImage;
+  document.getElementById("wordInput").value=word;
 }
 
-document.getElementById("addCardBtn").onclick = () => {
-  const word = document.getElementById("wordInput").value.trim();
-  if(!selectedImage || !word){
-    alert("Pick a picture and type a word");
-    return;
-  }
-
-  cardsData.push({img:selectedImage, word});
+/* ADD CARD */
+document.getElementById("addCardBtn").onclick=()=>{
+  const word=document.getElementById("wordInput").value.trim();
+  if(!selectedImage||!word) return alert("Pick image + word");
+  cardsData.push({img:selectedImage,word,used:false});
+  selectedImage=null;
   document.getElementById("preview").src="";
   document.getElementById("wordInput").value="";
-  selectedImage=null;
-
-  alert("Card added!");
 };
 
-document.getElementById("startBtn").onclick = () => {
-  if(cardsData.length === 0){
-    alert("Add at least one card");
-    return;
-  }
+/* TEAMS */
+document.getElementById("addTeamBtn").onclick=()=>{
+  const name=prompt("Team name:");
+  if(!name) return;
+  teams.push(name);
+  scores.push(0);
+  renderTeams();
+};
 
-  // LOCK BUILDER
-  document.getElementById("imagePanel").style.display="none";
-  document.getElementById("builder").style.display="none";
+function renderTeams(){
+  const div=document.getElementById("teams");
+  div.innerHTML="";
+  teams.forEach((t,i)=>{
+    const d=document.createElement("div");
+    d.className="team"+(i===currentTeam?" current":"");
+    d.style.background=teamColors[i%teamColors.length];
+    d.textContent=`${t}: ${scores[i]} pts`;
+    d.onclick=()=>{currentTeam=i;renderTeams();};
+    div.appendChild(d);
+  });
+}
 
+/* START GAME */
+document.getElementById("startBtn").onclick=()=>{
+  if(!cardsData.length) return alert("Add cards first");
+  if(!teams.length) return alert("Add teams first");
+  document.getElementById("setup").style.display="none";
   renderCards();
 };
 
+/* RENDER CARDS */
 function renderCards(){
-  const div = document.getElementById("cards");
+  const div=document.getElementById("cards");
   div.innerHTML="";
-
-  cardsData.forEach(cardData=>{
-    const card = document.createElement("div");
+  cardsData.forEach((c,i)=>{
+    const card=document.createElement("div");
     card.className="card";
-    card.innerHTML = `
+    card.innerHTML=`
       <div class="inner">
-        <div class="face front">❓</div>
-        <div class="face back">
-          <img src="${cardData.img}">
-        </div>
+        <div class="face front">${i+1}</div>
+        <div class="face back"><img src="${c.img}"></div>
       </div>
     `;
-    card.onclick = () => {
-      card.classList.toggle("flipped");
+    card.onclick=()=>{
+      if(c.used) return;
+      if(currentTeam===null) return alert("Select a team");
+      card.classList.add("flipped");
+      currentCard=c;
+      showOptions();
     };
     div.appendChild(card);
   });
+}
+
+/* TEACHER JUDGE */
+function showOptions(){
+  document.getElementById("options").innerHTML=`
+    <button class="optionBtn correct" onclick="markCorrect()">✅ Correct</button>
+    <button class="optionBtn wrong" onclick="markWrong()">❌ Wrong</button>
+  `;
+}
+
+function markCorrect(){
+  scores[currentTeam]+=10;
+  document.getElementById("feedback").textContent="🎉 Correct!";
+  endTurn();
+}
+
+function markWrong(){
+  document.getElementById("feedback").textContent="📢 Word: "+currentCard.word;
+  endTurn();
+}
+
+function endTurn(){
+  currentCard.used=true;
+  renderTeams();
+  document.getElementById("options").innerHTML="";
 }
 </script>
 
