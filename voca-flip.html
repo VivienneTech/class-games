@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VocaFlip – Kindergarten Edition</title>
+<title>🦄 VocaFlip 🦄</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -13,6 +13,11 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
+}
+
+h1{
+  margin:10px;
+  font-size:3rem;
 }
 
 /* ---------- SETUP AREA ---------- */
@@ -83,7 +88,7 @@ body{
   justify-content:center;
 }
 
-button{
+button, select{
   font-size:1.2rem;
   padding:12px 18px;
   border:none;
@@ -97,10 +102,10 @@ button{
 #startBtn{background:#7bdff2;}
 #restartBtn{background:#cdb4db;}
 
-/* ---------- GAME AREA ---------- */
+/* ---------- TEAMS ---------- */
 
 #teams{
-  display:none;
+  display:flex;
   gap:12px;
   margin:10px;
   flex-wrap:wrap;
@@ -112,28 +117,34 @@ button{
   border-radius:18px;
   font-size:1.4rem;
   color:white;
-  cursor:pointer;
 }
 .team.current{
   outline:4px solid gold;
 }
 
+/* ---------- GAME BOARD ---------- */
+
 #cards{
   display:none;
-  gap:14px;
-  justify-content:center;
-  margin-top:15px;
+  grid-template-columns:repeat(5, 1fr);
+  gap:24px;
+  width:90%;
+  max-width:1400px;
+  justify-items:center;
+  margin-top:20px;
 }
 
 .card{
-  width:160px;
-  height:160px;
+  width:180px;
+  height:180px;
   background:#ffe066;
-  border-radius:28px;
-  font-size:3.5rem;
+  border-radius:32px;
+  font-size:2.2rem;
+  font-weight:bold;
   display:flex;
-  align-items:center;
-  justify-content:center;
+  align-items:flex-start;
+  justify-content:flex-start;
+  padding:12px;
   cursor:pointer;
 }
 
@@ -141,23 +152,24 @@ button{
 
 #popup{
   background:white;
-  padding:30px;
-  border-radius:30px;
-  max-width:520px;
-  margin:30px auto;
+  padding:40px;
+  border-radius:36px;
+  max-width:620px;
+  margin:40px auto;
   display:none;
   text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
 }
 
 #popup img{
-  width:200px;
-  height:200px;
+  width:320px;
+  height:320px;
   object-fit:contain;
 }
 
 #options{
   display:flex;
-  gap:14px;
+  gap:16px;
   justify-content:center;
   margin-top:20px;
   flex-wrap:wrap;
@@ -165,9 +177,9 @@ button{
 
 .optionBtn{
   font-size:1.8rem;
-  padding:20px 24px;
+  padding:20px 28px;
   border:none;
-  border-radius:20px;
+  border-radius:22px;
   background:#ffafcc;
   cursor:pointer;
 }
@@ -181,7 +193,7 @@ button{
   align-items:center;
   justify-content:center;
   font-size:6rem;
-  background:rgba(255,255,255,0.7);
+  background:rgba(255,255,255,0.75);
   z-index:999;
   pointer-events:none;
 }
@@ -190,7 +202,7 @@ button{
 
 <body>
 
-<h1>🌈 VocaFlip 🌈</h1>
+<h1>🦄 VocaFlip 🦄</h1>
 
 <div id="teacherPanel">
   <h2>① Add words (paste images)</h2>
@@ -265,7 +277,7 @@ function renderTeams(){
   teams.forEach((t,i)=>{
     const d=document.createElement("div");
     d.className="team"+(i===currentTeam?" current":"");
-    d.style.background=["#ff6f91","#845ec2","#00c9a7","#ffc75f"][i%4];
+    d.style.background=["#ff6f91","#845ec2","#00c9a7","#ffc75f","#4d96ff"][i%5];
     d.textContent=`${t}: ${scores[i]}`;
     div.appendChild(d);
   });
@@ -281,8 +293,7 @@ function startGame(){
   if(words.length<2) return alert("Add at least 2 words");
 
   document.getElementById("teacherPanel").style.display="none";
-  document.getElementById("cards").style.display="flex";
-  document.getElementById("teams").style.display="flex";
+  document.getElementById("cards").style.display="grid";
 
   renderBoard();
 }
@@ -303,8 +314,7 @@ function renderBoard(){
 function openCard(i){
   if(used[i]) return;
   currentIndex=i;
-  const p=document.getElementById("popup");
-  p.style.display="block";
+  document.getElementById("popup").style.display="block";
   document.getElementById("popupImg").src=words[i].img;
 
   const count=parseInt(document.getElementById("choiceCount").value);
@@ -331,12 +341,12 @@ function answer(choice){
   if(choice===correct){
     scores[currentTeam]+=10;
     used[currentIndex]=true;
-    celebrate("👍🎉");
+    celebrate("🦄✨");
     currentTeam=(currentTeam+1)%teams.length;
     renderTeams();
     document.getElementById("popup").style.display="none";
   }else{
-    celebrate("⭐ Try again!");
+    celebrate("🦄 Try again!");
   }
 }
 
