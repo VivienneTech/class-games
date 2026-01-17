@@ -13,134 +13,210 @@ body{
   text-align:center;
 }
 h1{color:#ff4d6d;margin:10px;}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:12px;}
 
-#hint{
-  font-size:1.2rem;
-  color:#555;
-}
-
-#imageBar{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  padding:10px;
+#teacherPanel{
   background:#ffe5ec;
+  padding:10px;
 }
-
-.imageBtn{
-  width:80px;
-  height:80px;
-  background:white;
-  border-radius:18px;
-  cursor:pointer;
+input,select{
+  padding:6px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+.wordRow{
   display:flex;
-  align-items:center;
+  gap:6px;
   justify-content:center;
-}
-.imageBtn img{
-  width:85%;
-  height:85%;
-  object-fit:contain;
+  margin:4px 0;
 }
 
-#cards{
+#teams,#board,#options{
+  margin:15px;
+}
+
+.team{
+  display:inline-block;
+  padding:10px 15px;
+  margin:5px;
+  background:#ff85a1;
+  color:white;
+  font-weight:bold;
+}
+.team.active{
+  outline:4px solid gold;
+}
+
+#board{
   display:grid;
-  grid-template-columns:repeat(auto-fill,120px);
+  gap:12px;
   justify-content:center;
-  gap:20px;
-  margin:20px;
 }
 
 .card{
-  width:120px;
-  height:120px;
-  perspective:800px;
-  cursor:pointer;
-}
-.inner{
-  width:100%;
-  height:100%;
-  transition:transform 0.6s;
-  transform-style:preserve-3d;
-}
-.card.flipped .inner{
-  transform:rotateY(180deg);
-}
-
-.face{
-  position:absolute;
-  width:100%;
-  height:100%;
-  border-radius:20px;
-  backface-visibility:hidden;
+  background:#ffcad4;
+  border-radius:18px;
+  height:90px;
+  font-size:2rem;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:2.5rem;
 }
-.front{background:#ffcad4;}
-.back{
+.card.used{
+  background:#ddd;
+  color:#999;
+}
+
+#popup{
   background:white;
-  transform:rotateY(180deg);
+  padding:15px;
+  border-radius:20px;
+  max-width:300px;
+  margin:auto;
 }
-.back img{
-  width:90%;
-  height:90%;
+#popup img{
+  width:200px;
+  height:200px;
   object-fit:contain;
 }
+
+.optionBtn{
+  display:block;
+  margin:6px auto;
+  padding:10px;
+  font-size:1.2rem;
+  background:#ff85a1;
+  color:white;
+  width:90%;
+}
+.optionBtn.correct{background:#4caf50;}
+.optionBtn.wrong{background:#f44336;}
 </style>
 </head>
 
 <body>
 
 <h1>🌸 VocaFlip 🌸</h1>
-<div id="hint">👆 Teacher: click a picture · 👇 Kids: say & flip</div>
 
-<div id="imageBar">
-  <div class="imageBtn" onclick="addCard('dog')">
-    <img src="https://openclipart.org/image/200px/282123">
-  </div>
-  <div class="imageBtn" onclick="addCard('cat')">
-    <img src="https://openclipart.org/image/200px/282122">
-  </div>
-  <div class="imageBtn" onclick="addCard('apple')">
-    <img src="https://openclipart.org/image/200px/282124">
-  </div>
+<!-- TEACHER SETUP -->
+<div id="teacherPanel">
+  Choices:
+  <select id="choiceCount">
+    <option value="2">2</option>
+    <option value="3" selected>3</option>
+    <option value="4">4</option>
+  </select>
+
+  <button onclick="addTeam()">Add Team</button>
+  <button onclick="addWord()">Add Word</button>
+  <button onclick="startGame()">Start Game</button>
+
+  <div id="words"></div>
 </div>
 
-<div id="cards"></div>
+<div id="teams"></div>
+<div id="board"></div>
+<div id="popup" style="display:none;"></div>
 
 <script>
-const imageMap={
-  dog:"https://openclipart.org/image/400px/282123",
-  cat:"https://openclipart.org/image/400px/282122",
-  apple:"https://openclipart.org/image/400px/282124"
-};
+let teams=[],scores=[],currentTeam=0;
+let words=[];
+let used=[];
 
-let cards=[];
-
-function addCard(word){
-  cards.push({img:imageMap[word]});
-  render();
+function addTeam(){
+  const name=prompt("Team name:");
+  if(!name) return;
+  teams.push(name);
+  scores.push(0);
+  renderTeams();
 }
 
-function render(){
-  const board=document.getElementById("cards");
-  board.innerHTML="";
-  cards.forEach((c,i)=>{
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
-      <div class="inner">
-        <div class="face front">${i+1}</div>
-        <div class="face back"><img src="${c.img}"></div>
-      </div>
-    `;
-    card.onclick=()=>{
-      card.classList.toggle("flipped");
-    };
-    board.appendChild(card);
+function renderTeams(){
+  const div=document.getElementById("teams");
+  div.innerHTML="";
+  teams.forEach((t,i)=>{
+    const d=document.createElement("div");
+    d.className="team"+(i===currentTeam?" active":"");
+    d.textContent=`${t}: ${scores[i]}`;
+    d.onclick=()=>{currentTeam=i;renderTeams();}
+    div.appendChild(d);
   });
+}
+
+function addWord(){
+  if(words.length>=30) return alert("Max 30 words");
+  const row=document.createElement("div");
+  row.className="wordRow";
+  row.innerHTML=`
+    <input placeholder="Picture URL">
+    <input placeholder="Correct word">
+  `;
+  document.getElementById("words").appendChild(row);
+}
+
+function startGame(){
+  words=[];
+  document.querySelectorAll(".wordRow").forEach(r=>{
+    const img=r.children[0].value.trim();
+    const w=r.children[1].value.trim();
+    if(img&&w) words.push({img,word:w});
+  });
+  if(words.length<2) return alert("Add at least 2 words");
+  used=Array(words.length).fill(false);
+  renderBoard();
+}
+
+function renderBoard(){
+  const board=document.getElementById("board");
+  board.innerHTML="";
+  const cols=Math.ceil(Math.sqrt(words.length));
+  board.style.gridTemplateColumns=`repeat(${cols},90px)`;
+
+  words.forEach((w,i)=>{
+    const c=document.createElement("div");
+    c.className="card"+(used[i]?" used":"");
+    c.textContent=i+1;
+    c.onclick=()=>{ if(!used[i]) openCard(i); };
+    board.appendChild(c);
+  });
+}
+
+function openCard(i){
+  const popup=document.getElementById("popup");
+  popup.style.display="block";
+
+  const count=parseInt(document.getElementById("choiceCount").value);
+  let options=[words[i].word];
+
+  let pool=words.map(w=>w.word).filter(w=>w!==words[i].word);
+  while(options.length<count && pool.length){
+    options.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+  }
+  options.sort(()=>Math.random()-0.5);
+
+  popup.innerHTML=`
+    <img src="${words[i].img}">
+    ${options.map(o=>`<button class="optionBtn" onclick="answer('${o}','${words[i].word}',${i})">${o}</button>`).join("")}
+  `;
+}
+
+function answer(choice,correct,i){
+  const btns=document.querySelectorAll(".optionBtn");
+  btns.forEach(b=>{
+    if(b.textContent===correct) b.classList.add("correct");
+    else b.classList.add("wrong");
+    b.disabled=true;
+  });
+
+  if(choice===correct){
+    scores[currentTeam]+=10;
+    renderTeams();
+  }
+  used[i]=true;
+  setTimeout(()=>{
+    document.getElementById("popup").style.display="none";
+    renderBoard();
+  },800);
 }
 </script>
 
