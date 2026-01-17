@@ -10,66 +10,61 @@ body{
   margin:0;
   font-family:'Comic Sans MS', cursive;
   background:#fff0f6;
-  text-align:center;
 }
-h1{color:#ff4d6d;font-size:3rem;margin:10px;}
-#subtitle{color:#555;margin-bottom:10px;}
+h1{text-align:center;color:#ff4d6d;}
 
-button{
-  padding:10px 15px;
-  font-size:1.1rem;
-  border:none;
-  border-radius:10px;
+#layout{
+  display:flex;
+}
+
+/* LEFT IMAGE PANEL */
+#imagePanel{
+  width:200px;
+  background:#ffe5ec;
+  padding:10px;
+  overflow-y:auto;
+}
+#imagePanel h3{text-align:center;}
+.imageThumb{
+  width:80px;
+  height:80px;
+  border-radius:15px;
+  background:white;
+  margin:5px auto;
   cursor:pointer;
-  font-weight:bold;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.imageThumb img{
+  width:90%;
+  height:90%;
+  object-fit:contain;
 }
 
-#controls button{margin:5px;}
-#addTeamBtn{background:#ff9aa2;}
-#addCardBtn{background:#fcbf49;}
-#startBtn{background:#8ac926;}
-#restartBtn{background:#9b5de5;color:white;}
-
-#teacherPanel{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:10px;
-  margin:10px;
+/* MAIN AREA */
+#main{
+  flex:1;
+  text-align:center;
 }
 
 .cardInput{
   background:white;
-  border-radius:15px;
-  padding:10px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.2);
-}
-
-.cardInput input[type="file"]{
-  font-size:0.9rem;
-}
-.cardInput input[type="text"]{
-  width:90%;
-  margin-top:5px;
-  padding:5px;
-  font-size:1rem;
-}
-
-#teams{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:10px;
   margin:10px;
+  padding:10px;
+  border-radius:15px;
 }
-.team{
-  padding:10px 15px;
-  border-radius:12px;
-  font-size:1.2rem;
+
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:10px;
+  font-size:1rem;
   font-weight:bold;
   cursor:pointer;
-  color:white;
 }
-.team.current{box-shadow:0 0 10px gold;}
+#startBtn{background:#8ac926;}
+#restartBtn{background:#9b5de5;color:white;}
 
 #cards{
   display:grid;
@@ -78,12 +73,10 @@ button{
   gap:15px;
   margin:20px;
 }
-
 .card{
   width:120px;
   height:120px;
   perspective:800px;
-  cursor:pointer;
 }
 .inner{
   width:100%;
@@ -91,9 +84,7 @@ button{
   transition:transform 0.6s;
   transform-style:preserve-3d;
 }
-.card.flipped .inner{
-  transform:rotateY(180deg);
-}
+.card.flipped .inner{transform:rotateY(180deg);}
 .face{
   position:absolute;
   width:100%;
@@ -105,172 +96,83 @@ button{
   align-items:center;
   font-size:3rem;
 }
-.front{
-  background:#ffcad4;
-}
+.front{background:#ffcad4;}
 .back{
   background:white;
   transform:rotateY(180deg);
 }
-.back img{
-  width:90%;
-  height:90%;
-  object-fit:contain;
-}
-
-#options{
-  margin-top:10px;
-}
-.optionBtn{
-  margin:5px;
-  padding:12px 18px;
-  font-size:1.2rem;
-  border-radius:12px;
-  color:white;
-}
-.correct{background:#38b000;}
-.wrong{background:#d00000;}
-
-#feedback{
-  font-size:1.5rem;
-  margin-top:10px;
-  min-height:40px;
-}
+.back img{width:90%;height:90%;object-fit:contain;}
 </style>
 </head>
 
 <body>
 
 <h1>🌸 Picture Flip 🌸</h1>
-<div id="subtitle">Kindergarten ESL Speaking Game</div>
 
-<div id="controls">
-  <button id="addTeamBtn">Add Team</button>
-  <button id="addCardBtn">Add Card</button>
-  <button id="startBtn">Start Game</button>
-  <button id="restartBtn">Restart</button>
+<div id="layout">
+
+<!-- LEFT IMAGE PANEL -->
+<div id="imagePanel">
+  <h3>🖼 Animals</h3>
+
+  <div class="imageThumb" onclick="selectImage('dog')">
+    <img src="https://openclipart.org/image/200px/282123">
+  </div>
+
+  <div class="imageThumb" onclick="selectImage('cat')">
+    <img src="https://openclipart.org/image/200px/282122">
+  </div>
+
+  <div class="imageThumb" onclick="selectImage('apple')">
+    <img src="https://openclipart.org/image/200px/282124">
+  </div>
 </div>
 
-<h3>👩‍🏫 Teacher Panel</h3>
-<div id="teacherPanel"></div>
+<!-- MAIN -->
+<div id="main">
 
-<div id="teams"></div>
-<div id="cards"></div>
-<div id="options"></div>
-<div id="feedback"></div>
+  <div class="cardInput">
+    <p>Selected image:</p>
+    <img id="preview" style="width:80px;height:80px;object-fit:contain;">
+    <br>
+    <input id="wordInput" placeholder="Word">
+  </div>
+
+  <button id="startBtn">Start Game</button>
+  <button id="restartBtn" onclick="location.reload()">Restart</button>
+
+  <div id="cards"></div>
+</div>
+
+</div>
 
 <script>
-let teams=[], scores=[], selectedTeam=null;
-let cardsData=[], currentCard=null;
+let selectedImage = null;
 
-const teamColors=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93"];
-
-// START WITH 3 CARDS
-for(let i=0;i<3;i++) addCardInput();
-
-document.getElementById("addTeamBtn").onclick=()=>{
-  const name=prompt("Team name:");
-  if(!name) return;
-  teams.push(name);
-  scores.push(0);
-  renderTeams();
-};
-
-document.getElementById("addCardBtn").onclick=addCardInput;
+function selectImage(word){
+  const imgMap={
+    dog:"https://openclipart.org/image/400px/282123",
+    cat:"https://openclipart.org/image/400px/282122",
+    apple:"https://openclipart.org/image/400px/282124"
+  };
+  selectedImage = imgMap[word];
+  document.getElementById("preview").src = selectedImage;
+  document.getElementById("wordInput").value = word;
+}
 
 document.getElementById("startBtn").onclick=()=>{
-  cardsData=[];
-  document.querySelectorAll(".cardInput").forEach(box=>{
-    const file=box.querySelector("input[type=file]").files[0];
-    const word=box.querySelector("input[type=text]").value.trim();
-    if(file && word){
-      const reader=new FileReader();
-      reader.onload=()=> {
-        cardsData.push({img:reader.result, word, used:false});
-        if(cardsData.length===document.querySelectorAll(".cardInput").length){
-          renderCards();
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-};
+  if(!selectedImage) return alert("Select an image");
+  document.getElementById("imagePanel").style.display="none";
 
-document.getElementById("restartBtn").onclick=()=>location.reload();
-
-function addCardInput(){
-  const div=document.createElement("div");
-  div.className="cardInput";
-  div.innerHTML=`
-    <p>🖼 Picture</p>
-    <input type="file" accept="image/*">
-    <input type="text" placeholder="Word (teacher only)">
-  `;
-  document.getElementById("teacherPanel").appendChild(div);
-}
-
-function renderTeams(){
-  const div=document.getElementById("teams");
-  div.innerHTML="";
-  teams.forEach((t,i)=>{
-    const d=document.createElement("div");
-    d.className="team"+(i===selectedTeam?" current":"");
-    d.style.background=teamColors[i%teamColors.length];
-    d.textContent=`${t}: ${scores[i]} pts`;
-    d.onclick=()=>{selectedTeam=i;renderTeams();};
-    div.appendChild(d);
-  });
-}
-
-function renderCards(){
-  const div=document.getElementById("cards");
-  div.innerHTML="";
-  cardsData.forEach(c=>{
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
+  document.getElementById("cards").innerHTML=`
+    <div class="card flipped">
       <div class="inner">
         <div class="face front">❓</div>
-        <div class="face back"><img src="${c.img}"></div>
+        <div class="face back"><img src="${selectedImage}"></div>
       </div>
-    `;
-    card.onclick=()=>{
-      if(c.used) return;
-      if(selectedTeam===null) return alert("Select a team!");
-      card.classList.add("flipped");
-      currentCard=c;
-      showTeacherButtons();
-    };
-    div.appendChild(card);
-  });
-}
-
-function showTeacherButtons(){
-  document.getElementById("options").innerHTML=`
-    <button class="optionBtn correct" onclick="markCorrect()">✅ Correct</button>
-    <button class="optionBtn wrong" onclick="markWrong()">❌ Show Word</button>
+    </div>
   `;
-}
-
-function markCorrect(){
-  scores[selectedTeam]+=10;
-  currentCard.used=true;
-  document.getElementById("feedback").textContent="🎉 Great job!";
-  renderTeams();
-  clearOptions();
-}
-
-function markWrong(){
-  currentCard.used=true;
-  document.getElementById("feedback").textContent="📢 Word: "+currentCard.word;
-  clearOptions();
-}
-
-function clearOptions(){
-  setTimeout(()=>{
-    document.getElementById("options").innerHTML="";
-  },1200);
-}
+};
 </script>
 
 </body>
