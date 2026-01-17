@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>🌸 VocaFlip – Picture Edition 🌸</title>
+<title>🌸 VocaFlip – Simple Picture Flip 🌸</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -13,19 +13,17 @@ body{
   text-align:center;
 }
 h1{color:#ff4d6d;margin:10px;}
-#subtitle{color:#555;margin-bottom:10px;}
 
 button{
-  padding:10px 15px;
+  padding:10px 16px;
   font-size:1.1rem;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   cursor:pointer;
   font-weight:bold;
+  margin:5px;
 }
 
-#controls button{margin:5px;}
-#addTeamBtn{background:#ff9aa2;}
 #addCardBtn{background:#fcbf49;}
 #startBtn{background:#8ac926;}
 #restartBtn{background:#9b5de5;color:white;}
@@ -35,6 +33,7 @@ button{
   justify-content:center;
   gap:20px;
   flex-wrap:wrap;
+  margin-top:10px;
 }
 
 /* IMAGE PANEL */
@@ -78,28 +77,6 @@ input{
   width:90%;
   padding:6px;
   font-size:1rem;
-  margin-top:5px;
-}
-
-/* TEAMS */
-#teams{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:10px;
-  margin:10px;
-}
-.team{
-  padding:10px 15px;
-  border-radius:12px;
-  font-size:1.2rem;
-  font-weight:bold;
-  cursor:pointer;
-  color:white;
-}
-.team.current{
-  box-shadow:0 0 10px gold;
-  transform:scale(1.05);
 }
 
 /* CARDS */
@@ -137,9 +114,7 @@ input{
   font-size:2rem;
   font-weight:bold;
 }
-.front{
-  background:#ffcad4;
-}
+.front{background:#ffcad4;}
 .back{
   background:white;
   transform:rotateY(180deg);
@@ -149,37 +124,17 @@ input{
   height:90%;
   object-fit:contain;
 }
-
-/* TEACHER OPTIONS */
-#options{margin-top:10px;}
-.optionBtn{
-  margin:5px;
-  padding:10px 18px;
-  font-size:1.2rem;
-  border-radius:12px;
-  color:white;
-}
-.correct{background:#38b000;}
-.wrong{background:#d00000;}
-
-#feedback{
-  font-size:1.4rem;
-  min-height:40px;
-  margin-top:10px;
-}
 </style>
 </head>
 
 <body>
 
 <h1>🌸 VocaFlip 🌸</h1>
-<div id="subtitle">Picture Speaking Game</div>
 
-<div id="controls">
-  <button id="addTeamBtn">Add Team</button>
-  <button id="addCardBtn">Add Card</button>
-  <button id="startBtn">Start Game</button>
-  <button id="restartBtn">Restart</button>
+<div>
+  <button id="addCardBtn">➕ Add Card</button>
+  <button id="startBtn">▶ Start Game</button>
+  <button id="restartBtn">🔄 Restart</button>
 </div>
 
 <div id="setup">
@@ -200,34 +155,24 @@ input{
   <div id="builder">
     <p>Selected picture</p>
     <img id="preview">
-    <input id="wordInput" placeholder="Word (teacher)">
+    <input id="wordInput" placeholder="Word (teacher only)">
   </div>
 </div>
 
-<div id="teams"></div>
 <div id="cards"></div>
-<div id="options"></div>
-<div id="feedback"></div>
 
 <script>
 /* IMAGE LIBRARY */
-const imageMap = {
+const imageMap={
   dog:"https://openclipart.org/image/400px/282123",
   cat:"https://openclipart.org/image/400px/282122",
   apple:"https://openclipart.org/image/400px/282124"
 };
 
-/* STATE */
 let selectedImage=null;
 let cardsData=[];
-let teams=[];
-let scores=[];
-let currentTeam=null;
-let currentCard=null;
 
-const teamColors=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93"];
-
-/* IMAGE PICK */
+/* PICK IMAGE */
 function pickImage(word){
   selectedImage=imageMap[word];
   document.getElementById("preview").src=selectedImage;
@@ -237,44 +182,28 @@ function pickImage(word){
 /* ADD CARD */
 document.getElementById("addCardBtn").onclick=()=>{
   const word=document.getElementById("wordInput").value.trim();
-  if(!selectedImage||!word) return alert("Pick image + word");
-  cardsData.push({img:selectedImage,word,used:false});
+  if(!selectedImage||!word){
+    alert("Pick a picture and type the word");
+    return;
+  }
+  cardsData.push({img:selectedImage,word});
   selectedImage=null;
   document.getElementById("preview").src="";
   document.getElementById("wordInput").value="";
+  alert("Card added!");
 };
-
-/* TEAMS */
-document.getElementById("addTeamBtn").onclick=()=>{
-  const name=prompt("Team name:");
-  if(!name) return;
-  teams.push(name);
-  scores.push(0);
-  renderTeams();
-};
-
-function renderTeams(){
-  const div=document.getElementById("teams");
-  div.innerHTML="";
-  teams.forEach((t,i)=>{
-    const d=document.createElement("div");
-    d.className="team"+(i===currentTeam?" current":"");
-    d.style.background=teamColors[i%teamColors.length];
-    d.textContent=`${t}: ${scores[i]} pts`;
-    d.onclick=()=>{currentTeam=i;renderTeams();};
-    div.appendChild(d);
-  });
-}
 
 /* START GAME */
 document.getElementById("startBtn").onclick=()=>{
-  if(!cardsData.length) return alert("Add cards first");
-  if(!teams.length) return alert("Add teams first");
+  if(cardsData.length===0){
+    alert("Add at least one card");
+    return;
+  }
   document.getElementById("setup").style.display="none";
   renderCards();
 };
 
-/* RENDER CARDS */
+/* RENDER */
 function renderCards(){
   const div=document.getElementById("cards");
   div.innerHTML="";
@@ -288,40 +217,16 @@ function renderCards(){
       </div>
     `;
     card.onclick=()=>{
-      if(c.used) return;
-      if(currentTeam===null) return alert("Select a team");
-      card.classList.add("flipped");
-      currentCard=c;
-      showOptions();
+      card.classList.toggle("flipped");
     };
     div.appendChild(card);
   });
 }
 
-/* TEACHER JUDGE */
-function showOptions(){
-  document.getElementById("options").innerHTML=`
-    <button class="optionBtn correct" onclick="markCorrect()">✅ Correct</button>
-    <button class="optionBtn wrong" onclick="markWrong()">❌ Wrong</button>
-  `;
-}
-
-function markCorrect(){
-  scores[currentTeam]+=10;
-  document.getElementById("feedback").textContent="🎉 Correct!";
-  endTurn();
-}
-
-function markWrong(){
-  document.getElementById("feedback").textContent="📢 Word: "+currentCard.word;
-  endTurn();
-}
-
-function endTurn(){
-  currentCard.used=true;
-  renderTeams();
-  document.getElementById("options").innerHTML="";
-}
+/* RESTART */
+document.getElementById("restartBtn").onclick=()=>{
+  location.reload();
+};
 </script>
 
 </body>
