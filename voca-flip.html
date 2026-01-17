@@ -2,180 +2,257 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>🌼 VocaFlip 🌼</title>
+<title>VocaFlip – Kindergarten Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-:root{
-  --primary:#ff8fab;
-  --secondary:#ffe5ec;
-  --accent:#7bdff2;
-  --bg:#fffafc;
-}
-
 body{
   margin:0;
-  font-family:'Comic Sans MS', cursive;
-  background:var(--bg);
-  text-align:center;
+  font-family:'Comic Sans MS', cursive, sans-serif;
+  background:#fff5fb;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
-h1{
-  font-size:3rem;
-  margin:10px;
-  color:#ff4d6d;
-}
-
-button{
-  font-family:inherit;
-  cursor:pointer;
-  border:none;
-  border-radius:18px;
-  padding:14px 22px;
-  font-size:1.2rem;
-  background:var(--primary);
-  color:white;
-}
-
-input,select{
-  padding:10px;
-  font-size:1.1rem;
-  border-radius:12px;
-  border:1px solid #ccc;
-}
+/* ---------- SETUP AREA ---------- */
 
 #teacherPanel{
-  background:var(--secondary);
-  padding:16px;
+  background:#fff;
+  padding:20px;
+  border-radius:24px;
+  max-width:1400px;
+  width:95%;
+  margin-top:10px;
+}
+
+#words{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+  gap:12px;
 }
 
 .wordRow{
   display:flex;
   gap:12px;
-  justify-content:center;
-  margin:10px 0;
-  flex-wrap:wrap;
+  align-items:center;
+  background:#fff;
+  padding:10px;
+  border-radius:18px;
+  border:2px solid #f0f0f0;
 }
 
 .pasteBox{
-  width:110px;
-  height:110px;
+  width:90px;
+  height:90px;
   border:3px dashed #bbb;
-  border-radius:18px;
+  border-radius:16px;
   display:flex;
   align-items:center;
   justify-content:center;
+  font-size:0.8rem;
   background:white;
-  font-size:0.9rem;
+  cursor:pointer;
 }
 .pasteBox img{
   width:100%;
   height:100%;
   object-fit:contain;
-  border-radius:14px;
+  border-radius:12px;
 }
 
-#teams{
-  margin:15px;
-}
-.team{
-  display:inline-block;
-  padding:14px 20px;
-  margin:6px;
+.wordRow input{
   font-size:1.2rem;
-  background:var(--accent);
-  border-radius:20px;
+  padding:8px;
+  flex:1;
+  border-radius:12px;
+  border:1px solid #ccc;
 }
-.team.active{
+
+/* ---------- CONTROLS ---------- */
+
+#controls{
+  background:#fff;
+  padding:12px 16px;
+  border-radius:20px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  margin:15px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+button{
+  font-size:1.2rem;
+  padding:12px 18px;
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+#addWordBtn{background:#ff9aa2;}
+#addTeamBtn{background:#ffb7b2;}
+#startBtn{background:#7bdff2;}
+#restartBtn{background:#cdb4db;}
+
+/* ---------- GAME AREA ---------- */
+
+#teams{
+  display:none;
+  gap:12px;
+  margin:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.team{
+  padding:12px 18px;
+  border-radius:18px;
+  font-size:1.4rem;
+  color:white;
+  cursor:pointer;
+}
+.team.current{
   outline:4px solid gold;
 }
 
-#board{
-  display:grid;
-  gap:18px;
+#cards{
+  display:none;
+  gap:14px;
   justify-content:center;
-  margin:20px;
+  margin-top:15px;
 }
 
 .card{
-  width:130px;
-  height:130px;
+  width:160px;
+  height:160px;
   background:#ffe066;
-  border-radius:24px;
-  font-size:2.8rem;
+  border-radius:28px;
+  font-size:3.5rem;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
 }
-.card.used{
-  background:#ddd;
-  color:#999;
-  cursor:default;
-}
+
+/* ---------- QUESTION POPUP ---------- */
 
 #popup{
   background:white;
-  padding:20px;
-  border-radius:26px;
-  max-width:360px;
-  margin:20px auto;
-  box-shadow:0 12px 30px rgba(0,0,0,0.25);
+  padding:30px;
+  border-radius:30px;
+  max-width:520px;
+  margin:30px auto;
+  display:none;
+  text-align:center;
 }
 
 #popup img{
-  width:240px;
-  height:240px;
+  width:200px;
+  height:200px;
   object-fit:contain;
-  background:#f5f5f5;
-  border-radius:18px;
+}
+
+#options{
+  display:flex;
+  gap:14px;
+  justify-content:center;
+  margin-top:20px;
+  flex-wrap:wrap;
 }
 
 .optionBtn{
-  display:block;
-  margin:12px auto;
-  padding:16px;
-  font-size:1.5rem;
-  width:100%;
-  background:var(--primary);
-  color:white;
+  font-size:1.8rem;
+  padding:20px 24px;
+  border:none;
+  border-radius:20px;
+  background:#ffafcc;
+  cursor:pointer;
 }
-.optionBtn.correct{background:#4caf50;}
-.optionBtn.wrong{background:#f44336;}
+
+/* ---------- FEEDBACK ---------- */
+
+#celebrate{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:6rem;
+  background:rgba(255,255,255,0.7);
+  z-index:999;
+  pointer-events:none;
+}
 </style>
 </head>
 
 <body>
 
-<h1>🌼 VocaFlip 🌼</h1>
+<h1>🌈 VocaFlip 🌈</h1>
 
 <div id="teacherPanel">
-  Answer choices:
-  <select id="choiceCount">
-    <option value="2">2</option>
-    <option value="3" selected>3</option>
-    <option value="4">4</option>
-  </select>
-
-  <button onclick="addTeam()">➕ Add Team</button>
-  <button onclick="addWord()">➕ Add Word</button>
-  <button onclick="startGame()">▶ Start Game</button>
-
+  <h2>① Add words (paste images)</h2>
   <div id="words"></div>
 </div>
 
+<div id="controls">
+  <button id="addWordBtn">➕ Add word</button>
+  <button id="addTeamBtn">👧 Add team</button>
+
+  <select id="choiceCount">
+    <option value="2">2 choices</option>
+    <option value="3" selected>3 choices</option>
+    <option value="4">4 choices</option>
+  </select>
+
+  <button id="startBtn">▶ Start</button>
+  <button id="restartBtn">🔄 Restart</button>
+</div>
+
 <div id="teams"></div>
-<div id="board"></div>
-<div id="popup" style="display:none;"></div>
+<div id="cards"></div>
+
+<div id="popup">
+  <img id="popupImg">
+  <div id="options"></div>
+</div>
+
+<div id="celebrate"></div>
 
 <script>
-let teams=[],scores=[],currentTeam=0;
-let words=[],used=[];
-let gameStarted=false;
+let words=[], teams=[], scores=[], used=[];
+let currentTeam=0, currentIndex=null;
+
+function addWord(){
+  if(document.querySelectorAll(".wordRow").length>=30) return;
+
+  const row=document.createElement("div");
+  row.className="wordRow";
+  row.innerHTML=`
+    <div class="pasteBox">Paste<br>Image</div>
+    <input placeholder="Correct word">
+  `;
+
+  const box=row.querySelector(".pasteBox");
+  box.addEventListener("paste",e=>{
+    const item=[...e.clipboardData.items].find(i=>i.type.startsWith("image"));
+    if(!item) return;
+    const url=URL.createObjectURL(item.getAsFile());
+    box.innerHTML=`<img src="${url}">`;
+    box.dataset.img=url;
+  });
+
+  row.querySelector("input").addEventListener("keydown",e=>{
+    if(e.key==="Enter") addWord();
+  });
+
+  document.getElementById("words").appendChild(row);
+}
 
 function addTeam(){
-  if(gameStarted) return;
-  const name=prompt("Team name:");
+  const name=prompt("Team name?");
   if(!name) return;
   teams.push(name);
   scores.push(0);
@@ -187,35 +264,11 @@ function renderTeams(){
   div.innerHTML="";
   teams.forEach((t,i)=>{
     const d=document.createElement("div");
-    d.className="team"+(i===currentTeam?" active":"");
-    d.textContent=`${t}: ${scores[i]} pts`;
-    d.onclick=()=>{currentTeam=i;renderTeams();};
+    d.className="team"+(i===currentTeam?" current":"");
+    d.style.background=["#ff6f91","#845ec2","#00c9a7","#ffc75f"][i%4];
+    d.textContent=`${t}: ${scores[i]}`;
     div.appendChild(d);
   });
-}
-
-function addWord(){
-  if(gameStarted) return;
-  if(document.querySelectorAll(".wordRow").length>=30) return alert("Max 30 words");
-
-  const row=document.createElement("div");
-  row.className="wordRow";
-  row.innerHTML=`
-    <div class="pasteBox">📋 Paste Image</div>
-    <input placeholder="Correct word">
-  `;
-
-  const box=row.querySelector(".pasteBox");
-  box.addEventListener("paste",e=>{
-    const item=[...e.clipboardData.items].find(i=>i.type.startsWith("image"));
-    if(!item) return;
-    const file=item.getAsFile();
-    const url=URL.createObjectURL(file);
-    box.innerHTML=`<img src="${url}">`;
-    box.dataset.img=url;
-  });
-
-  document.getElementById("words").appendChild(row);
 }
 
 function startGame(){
@@ -223,63 +276,83 @@ function startGame(){
   document.querySelectorAll(".wordRow").forEach(r=>{
     const img=r.querySelector(".pasteBox").dataset.img;
     const w=r.querySelector("input").value.trim();
-    if(img&&w) words.push({img,word:w});
+    if(img && w) words.push({img,w});
   });
   if(words.length<2) return alert("Add at least 2 words");
-  gameStarted=true;
-  used=Array(words.length).fill(false);
+
+  document.getElementById("teacherPanel").style.display="none";
+  document.getElementById("cards").style.display="flex";
+  document.getElementById("teams").style.display="flex";
+
   renderBoard();
 }
 
 function renderBoard(){
-  const board=document.getElementById("board");
-  board.innerHTML="";
-  const cols=Math.ceil(Math.sqrt(words.length));
-  board.style.gridTemplateColumns=`repeat(${cols},130px)`;
-
+  const div=document.getElementById("cards");
+  div.innerHTML="";
+  used=Array(words.length).fill(false);
   words.forEach((_,i)=>{
     const c=document.createElement("div");
-    c.className="card"+(used[i]?" used":"");
+    c.className="card";
     c.textContent=i+1;
-    c.onclick=()=>{if(!used[i]) openCard(i);};
-    board.appendChild(c);
+    c.onclick=()=>openCard(i);
+    div.appendChild(c);
   });
 }
 
 function openCard(i){
-  const popup=document.getElementById("popup");
-  popup.style.display="block";
+  if(used[i]) return;
+  currentIndex=i;
+  const p=document.getElementById("popup");
+  p.style.display="block";
+  document.getElementById("popupImg").src=words[i].img;
 
-  const count=parseInt(choiceCount.value);
-  let options=[words[i].word];
-  let pool=words.map(w=>w.word).filter(w=>w!==words[i].word);
-
-  while(options.length<count && pool.length){
-    options.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+  const count=parseInt(document.getElementById("choiceCount").value);
+  let opts=[words[i].w];
+  while(opts.length<count){
+    const r=words[Math.floor(Math.random()*words.length)].w;
+    if(!opts.includes(r)) opts.push(r);
   }
-  options.sort(()=>Math.random()-0.5);
+  opts.sort(()=>Math.random()-0.5);
 
-  popup.innerHTML=`
-    <img src="${words[i].img}">
-    ${options.map(o=>`<button class="optionBtn" onclick="answer('${o}','${words[i].word}',${i})">${o}</button>`).join("")}
-  `;
+  const o=document.getElementById("options");
+  o.innerHTML="";
+  opts.forEach(x=>{
+    const b=document.createElement("button");
+    b.className="optionBtn";
+    b.textContent=x;
+    b.onclick=()=>answer(x);
+    o.appendChild(b);
+  });
 }
 
-function answer(choice,correct,i){
-  document.querySelectorAll(".optionBtn").forEach(b=>{
-    b.classList.add(b.textContent===correct?"correct":"wrong");
-    b.disabled=true;
-  });
+function answer(choice){
+  const correct=words[currentIndex].w;
   if(choice===correct){
     scores[currentTeam]+=10;
+    used[currentIndex]=true;
+    celebrate("👍🎉");
+    currentTeam=(currentTeam+1)%teams.length;
     renderTeams();
+    document.getElementById("popup").style.display="none";
+  }else{
+    celebrate("⭐ Try again!");
   }
-  used[i]=true;
-  setTimeout(()=>{
-    popup.style.display="none";
-    renderBoard();
-  },1000);
 }
+
+function celebrate(text){
+  const c=document.getElementById("celebrate");
+  c.textContent=text;
+  c.style.display="flex";
+  setTimeout(()=>c.style.display="none",900);
+}
+
+document.getElementById("addWordBtn").onclick=addWord;
+document.getElementById("addTeamBtn").onclick=addTeam;
+document.getElementById("startBtn").onclick=startGame;
+document.getElementById("restartBtn").onclick=()=>location.reload();
+
+addWord();
 </script>
 
 </body>
