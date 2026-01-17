@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>🌸 VocaFlip – Simple Picture Flip 🌸</title>
+<title>🌸 VocaFlip 🌸</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -14,82 +14,46 @@ body{
 }
 h1{color:#ff4d6d;margin:10px;}
 
-button{
-  padding:10px 16px;
-  font-size:1.1rem;
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:bold;
-  margin:5px;
+#hint{
+  font-size:1.2rem;
+  color:#555;
 }
 
-#addCardBtn{background:#fcbf49;}
-#startBtn{background:#8ac926;}
-#restartBtn{background:#9b5de5;color:white;}
-
-#setup{
+#imageBar{
   display:flex;
   justify-content:center;
-  gap:20px;
-  flex-wrap:wrap;
-  margin-top:10px;
+  gap:12px;
+  padding:10px;
+  background:#ffe5ec;
 }
 
-/* IMAGE PANEL */
-#imagePanel{
-  width:200px;
-  background:#ffe5ec;
-  padding:10px;
-  border-radius:16px;
-}
-.imageThumb{
+.imageBtn{
   width:80px;
   height:80px;
   background:white;
-  border-radius:14px;
-  margin:8px auto;
+  border-radius:18px;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
 }
-.imageThumb img{
+.imageBtn img{
   width:85%;
   height:85%;
   object-fit:contain;
 }
 
-/* BUILDER */
-#builder{
-  background:white;
-  padding:15px;
-  border-radius:16px;
-  width:260px;
-}
-#preview{
-  width:80px;
-  height:80px;
-  object-fit:contain;
-  margin-bottom:5px;
-}
-input{
-  width:90%;
-  padding:6px;
-  font-size:1rem;
-}
-
-/* CARDS */
 #cards{
   display:grid;
-  grid-template-columns:repeat(auto-fill,100px);
+  grid-template-columns:repeat(auto-fill,120px);
   justify-content:center;
-  gap:15px;
+  gap:20px;
   margin:20px;
 }
+
 .card{
-  width:100px;
-  height:100px;
+  width:120px;
+  height:120px;
   perspective:800px;
   cursor:pointer;
 }
@@ -102,17 +66,17 @@ input{
 .card.flipped .inner{
   transform:rotateY(180deg);
 }
+
 .face{
   position:absolute;
   width:100%;
   height:100%;
-  border-radius:16px;
+  border-radius:20px;
   backface-visibility:hidden;
   display:flex;
-  justify-content:center;
   align-items:center;
-  font-size:2rem;
-  font-weight:bold;
+  justify-content:center;
+  font-size:2.5rem;
 }
 .front{background:#ffcad4;}
 .back{
@@ -130,84 +94,40 @@ input{
 <body>
 
 <h1>🌸 VocaFlip 🌸</h1>
+<div id="hint">👆 Teacher: click a picture · 👇 Kids: say & flip</div>
 
-<div>
-  <button id="addCardBtn">➕ Add Card</button>
-  <button id="startBtn">▶ Start Game</button>
-  <button id="restartBtn">🔄 Restart</button>
-</div>
-
-<div id="setup">
-  <div id="imagePanel">
-    <h3>🖼 Pictures</h3>
-
-    <div class="imageThumb" onclick="pickImage('dog')">
-      <img src="https://openclipart.org/image/200px/282123">
-    </div>
-    <div class="imageThumb" onclick="pickImage('cat')">
-      <img src="https://openclipart.org/image/200px/282122">
-    </div>
-    <div class="imageThumb" onclick="pickImage('apple')">
-      <img src="https://openclipart.org/image/200px/282124">
-    </div>
+<div id="imageBar">
+  <div class="imageBtn" onclick="addCard('dog')">
+    <img src="https://openclipart.org/image/200px/282123">
   </div>
-
-  <div id="builder">
-    <p>Selected picture</p>
-    <img id="preview">
-    <input id="wordInput" placeholder="Word (teacher only)">
+  <div class="imageBtn" onclick="addCard('cat')">
+    <img src="https://openclipart.org/image/200px/282122">
+  </div>
+  <div class="imageBtn" onclick="addCard('apple')">
+    <img src="https://openclipart.org/image/200px/282124">
   </div>
 </div>
 
 <div id="cards"></div>
 
 <script>
-/* IMAGE LIBRARY */
 const imageMap={
   dog:"https://openclipart.org/image/400px/282123",
   cat:"https://openclipart.org/image/400px/282122",
   apple:"https://openclipart.org/image/400px/282124"
 };
 
-let selectedImage=null;
-let cardsData=[];
+let cards=[];
 
-/* PICK IMAGE */
-function pickImage(word){
-  selectedImage=imageMap[word];
-  document.getElementById("preview").src=selectedImage;
-  document.getElementById("wordInput").value=word;
+function addCard(word){
+  cards.push({img:imageMap[word]});
+  render();
 }
 
-/* ADD CARD */
-document.getElementById("addCardBtn").onclick=()=>{
-  const word=document.getElementById("wordInput").value.trim();
-  if(!selectedImage||!word){
-    alert("Pick a picture and type the word");
-    return;
-  }
-  cardsData.push({img:selectedImage,word});
-  selectedImage=null;
-  document.getElementById("preview").src="";
-  document.getElementById("wordInput").value="";
-  alert("Card added!");
-};
-
-/* START GAME */
-document.getElementById("startBtn").onclick=()=>{
-  if(cardsData.length===0){
-    alert("Add at least one card");
-    return;
-  }
-  document.getElementById("setup").style.display="none";
-  renderCards();
-};
-
-/* RENDER */
-function renderCards(){
-  const div=document.getElementById("cards");
-  div.innerHTML="";
-  cardsData.forEach((c,i)=>{
+function render(){
+  const board=document.getElementById("cards");
+  board.innerHTML="";
+  cards.forEach((c,i)=>{
     const card=document.createElement("div");
     card.className="card";
     card.innerHTML=`
@@ -219,14 +139,9 @@ function renderCards(){
     card.onclick=()=>{
       card.classList.toggle("flipped");
     };
-    div.appendChild(card);
+    board.appendChild(card);
   });
 }
-
-/* RESTART */
-document.getElementById("restartBtn").onclick=()=>{
-  location.reload();
-};
 </script>
 
 </body>
