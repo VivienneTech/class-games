@@ -11,59 +11,71 @@ body{
   font-family:'Comic Sans MS', cursive;
   background:#fff0f6;
 }
+
 h1{text-align:center;color:#ff4d6d;}
 
-#layout{
+#app{
   display:flex;
 }
 
 /* LEFT IMAGE PANEL */
 #imagePanel{
-  width:200px;
+  width:220px;
   background:#ffe5ec;
   padding:10px;
   overflow-y:auto;
 }
-#imagePanel h3{text-align:center;}
+
 .imageThumb{
-  width:80px;
-  height:80px;
-  border-radius:15px;
+  width:90px;
+  height:90px;
   background:white;
-  margin:5px auto;
+  border-radius:16px;
+  margin:8px auto;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 .imageThumb img{
-  width:90%;
-  height:90%;
+  width:85%;
+  height:85%;
   object-fit:contain;
 }
 
-/* MAIN AREA */
+/* MAIN */
 #main{
   flex:1;
+  padding:10px;
   text-align:center;
 }
 
 .cardInput{
   background:white;
-  margin:10px;
+  margin:10px auto;
   padding:10px;
-  border-radius:15px;
+  border-radius:16px;
+  width:260px;
+}
+
+#preview{
+  width:80px;
+  height:80px;
+  object-fit:contain;
 }
 
 button{
-  padding:8px 14px;
+  padding:10px 16px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   font-size:1rem;
   font-weight:bold;
   cursor:pointer;
+  margin:5px;
 }
+
 #startBtn{background:#8ac926;}
+#addCardBtn{background:#fcbf49;}
 #restartBtn{background:#9b5de5;color:white;}
 
 #cards{
@@ -71,20 +83,24 @@ button{
   grid-template-columns:repeat(auto-fill,120px);
   justify-content:center;
   gap:15px;
-  margin:20px;
+  margin-top:20px;
 }
+
 .card{
   width:120px;
   height:120px;
   perspective:800px;
+  cursor:pointer;
 }
 .inner{
   width:100%;
   height:100%;
-  transition:transform 0.6s;
   transform-style:preserve-3d;
+  transition:transform 0.6s;
 }
-.card.flipped .inner{transform:rotateY(180deg);}
+.card.flipped .inner{
+  transform:rotateY(180deg);
+}
 .face{
   position:absolute;
   width:100%;
@@ -101,7 +117,11 @@ button{
   background:white;
   transform:rotateY(180deg);
 }
-.back img{width:90%;height:90%;object-fit:contain;}
+.back img{
+  width:90%;
+  height:90%;
+  object-fit:contain;
+}
 </style>
 </head>
 
@@ -109,21 +129,19 @@ button{
 
 <h1>🌸 Picture Flip 🌸</h1>
 
-<div id="layout">
+<div id="app">
 
-<!-- LEFT IMAGE PANEL -->
+<!-- IMAGE PANEL -->
 <div id="imagePanel">
-  <h3>🖼 Animals</h3>
+  <h3>🖼 Pick a picture</h3>
 
-  <div class="imageThumb" onclick="selectImage('dog')">
+  <div class="imageThumb" onclick="pickImage('dog')">
     <img src="https://openclipart.org/image/200px/282123">
   </div>
-
-  <div class="imageThumb" onclick="selectImage('cat')">
+  <div class="imageThumb" onclick="pickImage('cat')">
     <img src="https://openclipart.org/image/200px/282122">
   </div>
-
-  <div class="imageThumb" onclick="selectImage('apple')">
+  <div class="imageThumb" onclick="pickImage('apple')">
     <img src="https://openclipart.org/image/200px/282124">
   </div>
 </div>
@@ -131,48 +149,88 @@ button{
 <!-- MAIN -->
 <div id="main">
 
-  <div class="cardInput">
-    <p>Selected image:</p>
-    <img id="preview" style="width:80px;height:80px;object-fit:contain;">
-    <br>
-    <input id="wordInput" placeholder="Word">
+  <div id="builder">
+    <div class="cardInput">
+      <p>Selected picture</p>
+      <img id="preview">
+      <br><br>
+      <input id="wordInput" placeholder="Word (teacher)" />
+    </div>
+
+    <button id="addCardBtn">➕ Add Card</button>
+    <button id="startBtn">🎮 Start Game</button>
   </div>
 
-  <button id="startBtn">Start Game</button>
-  <button id="restartBtn" onclick="location.reload()">Restart</button>
-
   <div id="cards"></div>
-</div>
 
+</div>
 </div>
 
 <script>
-let selectedImage = null;
+const imageMap = {
+  dog: "https://openclipart.org/image/400px/282123",
+  cat: "https://openclipart.org/image/400px/282122",
+  apple: "https://openclipart.org/image/400px/282124"
+};
 
-function selectImage(word){
-  const imgMap={
-    dog:"https://openclipart.org/image/400px/282123",
-    cat:"https://openclipart.org/image/400px/282122",
-    apple:"https://openclipart.org/image/400px/282124"
-  };
-  selectedImage = imgMap[word];
+let selectedImage = null;
+let cardsData = [];
+
+function pickImage(word){
+  selectedImage = imageMap[word];
   document.getElementById("preview").src = selectedImage;
   document.getElementById("wordInput").value = word;
 }
 
-document.getElementById("startBtn").onclick=()=>{
-  if(!selectedImage) return alert("Select an image");
-  document.getElementById("imagePanel").style.display="none";
+document.getElementById("addCardBtn").onclick = () => {
+  const word = document.getElementById("wordInput").value.trim();
+  if(!selectedImage || !word){
+    alert("Pick a picture and type a word");
+    return;
+  }
 
-  document.getElementById("cards").innerHTML=`
-    <div class="card flipped">
+  cardsData.push({img:selectedImage, word});
+  document.getElementById("preview").src="";
+  document.getElementById("wordInput").value="";
+  selectedImage=null;
+
+  alert("Card added!");
+};
+
+document.getElementById("startBtn").onclick = () => {
+  if(cardsData.length === 0){
+    alert("Add at least one card");
+    return;
+  }
+
+  // LOCK BUILDER
+  document.getElementById("imagePanel").style.display="none";
+  document.getElementById("builder").style.display="none";
+
+  renderCards();
+};
+
+function renderCards(){
+  const div = document.getElementById("cards");
+  div.innerHTML="";
+
+  cardsData.forEach(cardData=>{
+    const card = document.createElement("div");
+    card.className="card";
+    card.innerHTML = `
       <div class="inner">
         <div class="face front">❓</div>
-        <div class="face back"><img src="${selectedImage}"></div>
+        <div class="face back">
+          <img src="${cardData.img}">
+        </div>
       </div>
-    </div>
-  `;
-};
+    `;
+    card.onclick = () => {
+      card.classList.toggle("flipped");
+    };
+    div.appendChild(card);
+  });
+}
 </script>
 
 </body>
